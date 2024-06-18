@@ -7,7 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="PaymentSystem.DataLayer\**" />
+    <Compile Remove="PaymentSystem.Services\**" />
+    <Content Remove="PaymentSystem.DataLayer\**" />
+    <Content Remove="PaymentSystem.Services\**" />
+    <EmbeddedResource Remove="PaymentSystem.DataLayer\**" />
+    <EmbeddedResource Remove="PaymentSystem.Services\**" />
+    <None Remove="PaymentSystem.DataLayer\**" />
+    <None Remove="PaymentSystem.Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="PaymentSystem.Services\PaymentSystem.Services.csproj" />
   </ItemGroup>
 
 </Project>
