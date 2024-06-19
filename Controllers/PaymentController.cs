@@ -9,6 +9,7 @@ namespace PaymentSystem.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
+
         private readonly IPaymentService _paymentService;
         private readonly ILogger<PaymentController> _logger;
 
@@ -39,15 +40,8 @@ namespace PaymentSystem.Controllers
         {
             try
             {
-                var result = await _paymentService.ConfirmPaymentAsync(request.TransactionId, request.ConfirmationCode);
-                if (result)
-                {
-                    return Ok(new { Status = "Success" });
-                }
-                else
-                {
-                    return BadRequest(new { Status = "Error", Message = "Failed to confirm payment." });
-                }
+                await _paymentService.ConfirmPaymentAsync(request.TransactionId, request.ConfirmationCode);
+                return Ok(new { Status = "Success" });
             }
             catch (Exception ex)
             {

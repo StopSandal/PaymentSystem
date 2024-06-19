@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Payment;
+using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
 using PaymentSystem.Services.Interfaces;
 
 
@@ -9,21 +10,15 @@ namespace PaymentSystem.Services.Services
 {
     public class PaymentService : IPaymentService
     {
-        const string TRANSACTION_STATUS_PENDING = "Pending";
-        const string TRANSACTION_STATUS_CANCELED= "Canceled";
-        const string TRANSACTION_STATUS_CONFIRMED = "Confirmed";
-
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<PaymentService> _logger;
         private readonly ICardService _cardService;
-        private readonly IConfirmationGenerator _confirmationGenerator;
+        private readonly ITransactionService _transactionService;
 
-        public PaymentService(IUnitOfWork unitOfWork, ILogger<PaymentService> logger, ICardService cardService, IConfirmationGenerator confirmationGenerator)
+        public PaymentService(ILogger<PaymentService> logger, ICardService cardService, ITransactionService transactionService)
         {
-            _unitOfWork = unitOfWork;
             _logger = logger;
             _cardService = cardService;
-            _confirmationGenerator = confirmationGenerator;
+            _transactionService = transactionService;
         }
         public async Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal amount, string currency)
         {
@@ -46,83 +41,46 @@ namespace PaymentSystem.Services.Services
                 throw new InvalidOperationException("Insufficient funds.");
             }
 
-            var confirmationCode = await _confirmationGenerator.GenerateConfirmationCodeAsync();
-            var transaction = new Transaction
+            var transaction =  await _transactionService.CreateAsync(new AddTransactionDTO
             {
                 CardId = cardId,
                 Amount = amount,
-                CurrencyType = currency,
-                TransactionDate = DateTime.UtcNow,
-                Status = TRANSACTION_STATUS_PENDING,
-                ConfirmationCode = confirmationCode,
-                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(5),
-                Card = card
-            };
+                CurrencyType = currency
+            });
 
-            await _unitOfWork.TransactionRepository.InsertAsync(transaction);
-            await _unitOfWork.SaveAsync(); ;
+            _logger.LogInformation("Payment initiated. Card ID: {CardId}, Transaction ID: {TransactionId}, Confirmation Code: {ConfirmationCode}", cardId, transaction.Id, transaction.ConfirmationCode);
 
-            _logger.LogInformation("Payment initiated. Card ID: {CardId}, Transaction ID: {TransactionId}, Confirmation Code: {ConfirmationCode}", cardId, transaction.Id, confirmationCode);
-
-            return new ConfirmPaymentDTO { TransactionId = transaction.Id, ConfirmationCode = confirmationCode };
+            return new ConfirmPaymentDTO { TransactionId = transaction.Id, ConfirmationCode = transaction.ConfirmationCode };
 
         }
 
-        public async Task<bool> ConfirmPaymentAsync(long transactionId, string confirmationCode)
+        public async Task ConfirmPaymentAsync(long transactionId, string confirmationCode)
         {
 
-            var transaction = await _unitOfWork.TransactionRepository.GetByIDAsync(transactionId);
-            if (transaction == null)
+            try
             {
-                _logger.LogWarning("Transaction not found. Transaction ID: {TransactionId}", transactionId);
-                throw new InvalidOperationException("Transaction not found.");
+                var transaction = await _transactionService.ConfirmTransactionAsync(transactionId, confirmationCode);
+                await _cardService.DecreaseBalanceAsync(transaction.CardId, transaction.Amount);
             }
-
-            if (transaction.Status != TRANSACTION_STATUS_PENDING)
+            catch(InvalidOperationException ex)
             {
-                _logger.LogWarning("Transaction not pending. Transaction ID: {TransactionId}", transactionId);
-                throw new InvalidOperationException("Transaction already canceled or confirmed.");
+                _logger.LogWarning("Transaction not confirmed");
+                throw;
             }
-
-            if (transaction.ConfirmationCodeExpiresAt < DateTime.UtcNow)
-            {
-                _logger.LogWarning("Confirmation code expired. Transaction ID: {TransactionId}", transactionId);
-                throw new InvalidOperationException("Confirmation code expired.");
-            }
-
-            if (transaction.ConfirmationCode != confirmationCode)
-            {
-                _logger.LogWarning("Invalid confirmation code. Transaction ID: {TransactionId}", transactionId);
-                throw new Exception("Invalid confirmation code.");
-            }
-
-            transaction.Status = TRANSACTION_STATUS_CONFIRMED;
-
-            await _unitOfWork.SaveAsync();
-
-            await _cardService.DecreaseBalanceAsync(transaction.CardId, transaction.Amount);
-
-            _logger.LogInformation("Transaction completed successfully. Transaction ID: {TransactionId}", transactionId);
-            return true;
         }
 
 
         public async Task CancelPaymentAsync(long transactionId)
         {
-            var transaction = await _unitOfWork.TransactionRepository.GetByIDAsync(transactionId);
-            if (transaction == null)
+            try
             {
-                _logger.LogWarning("Transaction not found. Transaction ID: {TransactionId}", transactionId);
-                throw new InvalidOperationException("Transaction not found.");
+                await _transactionService.CancelTransactionAsync(transactionId);
             }
-            if (transaction.Status != TRANSACTION_STATUS_PENDING)
+            catch (InvalidOperationException ex)
             {
-                _logger.LogWarning("Transaction not pending. Transaction ID: {TransactionId}", transactionId);
-                throw new InvalidOperationException("Transaction already canceled or confirmed.");
+                _logger.LogWarning("Transaction not canceled");
+                throw;
             }
-
-            transaction.Status = TRANSACTION_STATUS_CANCELED;
-            await _unitOfWork.SaveAsync();
 
             _logger.LogInformation("Transaction cancelled. Transaction ID: {TransactionId}", transactionId);
 
