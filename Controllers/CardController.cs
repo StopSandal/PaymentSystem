@@ -34,7 +34,7 @@ namespace PaymentSystem.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting card with ID {CardId}", id);
-                return StatusCode(500, "Internal server error");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -53,7 +53,7 @@ namespace PaymentSystem.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting card with number {CardNumber}", cardNumber);
-                return StatusCode(500, "Internal server error");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -68,7 +68,7 @@ namespace PaymentSystem.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting cards");
-                return StatusCode(500, "Internal server error");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -83,7 +83,7 @@ namespace PaymentSystem.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating card");
-                return StatusCode(500, "Internal server error");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -98,7 +98,7 @@ namespace PaymentSystem.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating card with ID {CardId}", id);
-                return StatusCode(500, "Internal server error");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -113,7 +113,7 @@ namespace PaymentSystem.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting card with ID {CardId}", id);
-                return StatusCode(500, "Internal server error");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -125,10 +125,15 @@ namespace PaymentSystem.Controllers
                 await _cardService.IncreaseBalanceAsync(balanceUpdate.CardId, balanceUpdate.Amount);
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (InvalidDataException ex)
             {
                 _logger.LogError(ex, "Error increasing balance for card ID {CardId}", balanceUpdate.CardId);
-                return StatusCode(500, "Internal server error");
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Error increasing balance for card ID {CardId}", balanceUpdate.CardId);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -140,10 +145,15 @@ namespace PaymentSystem.Controllers
                 await _cardService.DecreaseBalanceAsync(balanceUpdate.CardId, balanceUpdate.Amount);
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (InvalidDataException ex)
             {
                 _logger.LogError(ex, "Error decreasing balance for card ID {CardId}", balanceUpdate.CardId);
-                return StatusCode(500, "Internal server error");
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Error decreasing balance for card ID {CardId}", balanceUpdate.CardId);
+                return BadRequest(ex.Message);
             }
         }
     }

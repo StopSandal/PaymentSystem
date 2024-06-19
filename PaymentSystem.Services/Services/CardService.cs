@@ -83,7 +83,7 @@ namespace PaymentSystem.Services.Services
         {
             var item = await _unitOfWork.CardRepository.GetByIDAsync(id);
             if (item == null)
-                throw new NullReferenceException("No Card to update");
+                throw new InvalidDataException("No Card to update");
             _mapper.Map(editCard, item);
             _unitOfWork.CardRepository.Update(item);
             await _unitOfWork.SaveAsync();

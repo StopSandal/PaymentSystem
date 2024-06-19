@@ -31,7 +31,7 @@ namespace PaymentSystem.Services.Services
             if (card.Balance < amount)
             {
                 _logger.LogWarning("Insufficient funds. Card ID: {CardId}, Available Balance: {Balance}, Attempted Amount: {Amount}", cardId, card.Balance, amount);
-                throw new Exception("Insufficient funds.");
+                throw new InvalidOperationException("Insufficient funds.");
             }
 
             var confirmationCode = "1111"; // Confiramtion code
@@ -63,13 +63,13 @@ namespace PaymentSystem.Services.Services
             if (transaction == null)
             {
                 _logger.LogWarning("Transaction not found. Transaction ID: {TransactionId}", transactionId);
-                throw new Exception("Transaction not found.");
+                throw new InvalidOperationException("Transaction not found.");
             }
 
             if (transaction.ConfirmationCodeExpiresAt < DateTime.UtcNow)
             {
                 _logger.LogWarning("Confirmation code expired. Transaction ID: {TransactionId}", transactionId);
-                throw new Exception("Confirmation code expired.");
+                throw new InvalidOperationException("Confirmation code expired.");
             }
 
             if (transaction.ConfirmationCode != confirmationCode)
@@ -102,7 +102,7 @@ namespace PaymentSystem.Services.Services
             if (transaction == null)
             {
                 _logger.LogWarning("Transaction not found. Transaction ID: {TransactionId}", transactionId);
-                throw new Exception("Transaction not found.");
+                throw new InvalidOperationException("Transaction not found.");
             }
 
             transaction.Status = "Cancelled";
