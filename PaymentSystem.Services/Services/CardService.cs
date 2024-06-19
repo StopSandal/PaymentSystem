@@ -10,12 +10,22 @@ using System.Threading.Tasks;
 
 namespace PaymentSystem.Services.Services
 {
+    /// <summary>
+    /// Service for handling card-related operations such as creating, updating, retrieving, and deleting cards.
+    /// Implements <see cref="ICardService"/>.
+    /// </summary>
     public class CardService : ICardService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<CardService> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CardService"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work for interacting with repositories.</param>
+        /// <param name="mapper">The mapper for entity-DTO transformations.</param>
+        /// <param name="logger">The logger for logging information.</param>
         public CardService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CardService> logger)
         {
             _unitOfWork = unitOfWork;
@@ -23,6 +33,8 @@ namespace PaymentSystem.Services.Services
             _logger = logger;
         }
 
+        /// <inheritdoc />
+        /// <exception cref="Exception">Thrown when an error occurs while fetching the card.</exception>
         public async Task<Card> GetCardAsync(long id)
         {
             try
@@ -42,6 +54,8 @@ namespace PaymentSystem.Services.Services
             }
         }
 
+        /// <inheritdoc />
+        /// <exception cref="Exception">Thrown when an error occurs while fetching the card by card number.</exception>
         public async Task<Card> GetCardByCardNumberAsync(string cardNumber)
         {
             try
@@ -61,6 +75,8 @@ namespace PaymentSystem.Services.Services
             }
         }
 
+        /// <inheritdoc />
+        /// <exception cref="Exception">Thrown when an error occurs while fetching all cards.</exception>
         public async Task<IEnumerable<Card>> GetCardsAsync()
         {
             try
@@ -75,6 +91,8 @@ namespace PaymentSystem.Services.Services
             }
         }
 
+        /// <inheritdoc />
+        /// <exception cref="Exception">Thrown when an error occurs while creating the card.</exception>
         public async Task CreateCardAsync(AddCardDTO newCard)
         {
             try
@@ -91,6 +109,10 @@ namespace PaymentSystem.Services.Services
             }
         }
 
+        /// <inheritdoc />
+        /// <exception cref="InvalidDataException">Thrown when the card does not exist.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the amount is invalid or the balance is insufficient.</exception>
+        /// <exception cref="Exception">Thrown when an error occurs while decreasing the balance.</exception>
         public async Task DecreaseBalanceAsync(long id, decimal amount)
         {
             try
@@ -123,6 +145,8 @@ namespace PaymentSystem.Services.Services
             }
         }
 
+        /// <inheritdoc />
+        /// <exception cref="Exception">Thrown when an error occurs while deleting the card.</exception>
         public async Task DeleteCardAsync(long id)
         {
             try
@@ -139,6 +163,10 @@ namespace PaymentSystem.Services.Services
             }
         }
 
+        /// <inheritdoc />
+        /// <exception cref="InvalidDataException">Thrown when the card does not exist.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the amount is invalid.</exception>
+        /// <exception cref="Exception">Thrown when an error occurs while increasing the balance.</exception>
         public async Task IncreaseBalanceAsync(long id, decimal amount)
         {
             try
@@ -166,6 +194,9 @@ namespace PaymentSystem.Services.Services
             }
         }
 
+        /// <inheritdoc />
+        /// <exception cref="InvalidDataException">Thrown when the card to update does not exist.</exception>
+        /// <exception cref="Exception">Thrown when an error occurs while updating the card.</exception>
         public async Task UpdateCardAsync(long id, EditCardDTO editCard)
         {
             try

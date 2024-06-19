@@ -5,21 +5,34 @@ using PaymentSystem.DataLayer.EntitiesDTO.Payment;
 using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
 using PaymentSystem.Services.Interfaces;
 
-
 namespace PaymentSystem.Services.Services
 {
+    /// <summary>
+    /// Provides payment processing services.
+    /// </summary>
     public class PaymentService : IPaymentService
     {
         private readonly ILogger<PaymentService> _logger;
         private readonly ICardService _cardService;
         private readonly ITransactionService _transactionService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PaymentService"/> class.
+        /// </summary>
+        /// <param name="logger">The logger instance.</param>
+        /// <param name="cardService">The card service instance.</param>
+        /// <param name="transactionService">The transaction service instance.</param>
         public PaymentService(ILogger<PaymentService> logger, ICardService cardService, ITransactionService transactionService)
         {
             _logger = logger;
             _cardService = cardService;
             _transactionService = transactionService;
         }
+
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the card is not found, there is a currency mismatch, or there are insufficient funds.
+        /// </exception>
         public async Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal amount, string currency)
         {
             var card = await _cardService.GetCardAsync(cardId);
@@ -41,7 +54,7 @@ namespace PaymentSystem.Services.Services
                 throw new InvalidOperationException("Insufficient funds.");
             }
 
-            var transaction =  await _transactionService.CreateAsync(new AddTransactionDTO
+            var transaction = await _transactionService.CreateAsync(new AddTransactionDTO
             {
                 CardId = cardId,
                 Amount = amount,
@@ -51,25 +64,26 @@ namespace PaymentSystem.Services.Services
             _logger.LogInformation("Payment initiated. Card ID: {CardId}, Transaction ID: {TransactionId}, Confirmation Code: {ConfirmationCode}", cardId, transaction.Id, transaction.ConfirmationCode);
 
             return new ConfirmPaymentDTO { TransactionId = transaction.Id, ConfirmationCode = transaction.ConfirmationCode };
-
         }
 
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">Thrown when the transaction is not confirmed.</exception>
         public async Task ConfirmPaymentAsync(long transactionId, string confirmationCode)
         {
-
             try
             {
                 var transaction = await _transactionService.ConfirmTransactionAsync(transactionId, confirmationCode);
                 await _cardService.DecreaseBalanceAsync(transaction.CardId, transaction.Amount);
             }
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
-                _logger.LogWarning("Transaction not confirmed");
+                _logger.LogWarning("Transaction not confirmed. Transaction ID: {TransactionId}", transactionId);
                 throw;
             }
         }
 
-
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">Thrown when the transaction is not canceled.</exception>
         public async Task CancelPaymentAsync(long transactionId)
         {
             try
@@ -78,12 +92,11 @@ namespace PaymentSystem.Services.Services
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogWarning("Transaction not canceled");
+                _logger.LogWarning("Transaction not canceled. Transaction ID: {TransactionId}", transactionId);
                 throw;
             }
 
             _logger.LogInformation("Transaction cancelled. Transaction ID: {TransactionId}", transactionId);
-
         }
     }
 }

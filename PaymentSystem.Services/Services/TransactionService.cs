@@ -6,12 +6,14 @@ using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
 using PaymentSystem.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PaymentSystem.Services.Services
 {
+    /// <summary>
+    /// Service for handling transaction-related operations such as creating, confirming, and retrieving transactions.
+    /// Implements <see cref="ITransactionService"/>.
+    /// </summary>
     public class TransactionService : ITransactionService
     {
         const string TRANSACTION_STATUS_PENDING = "Pending";
@@ -25,6 +27,14 @@ namespace PaymentSystem.Services.Services
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransactionService"/> class.
+        /// </summary>
+        /// <param name="confirmationGenerator">The service for generating confirmation codes.</param>
+        /// <param name="unitOfWork">The unit of work for interacting with repositories.</param>
+        /// <param name="configuration">The configuration settings.</param>
+        /// <param name="logger">The logger for logging information.</param>
+        /// <param name="mapper">The mapper for entity-DTO transformations.</param>
         public TransactionService(IConfirmationGenerator confirmationGenerator, IUnitOfWork unitOfWork, IConfiguration configuration, ILogger<TransactionService> logger, IMapper mapper)
         {
             _confirmationGenerator = confirmationGenerator;
@@ -34,16 +44,19 @@ namespace PaymentSystem.Services.Services
             _configuration = configuration;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Transaction>> GetAllTransactionsAsync()
         {
             return await _unitOfWork.TransactionRepository.GetAsync();
         }
 
+        /// <inheritdoc />
         public async Task<Transaction> GetTransactionByIdAsync(long transactionId)
         {
             return await _unitOfWork.TransactionRepository.GetByIDAsync(transactionId);
         }
 
+        /// <inheritdoc />
         public async Task<Transaction> CreateAsync(AddTransactionDTO newTransaction)
         {
             var confirmationCode = await _confirmationGenerator.GenerateConfirmationCodeAsync();
@@ -58,6 +71,8 @@ namespace PaymentSystem.Services.Services
             return transaction;
         }
 
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">Thrown when the transaction is not found or already processed.</exception>
         public async Task CancelTransactionAsync(long transactionId)
         {
             var transaction = await _unitOfWork.TransactionRepository.GetByIDAsync(transactionId);
@@ -76,6 +91,9 @@ namespace PaymentSystem.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">Thrown when the transaction is not found, already processed, or the confirmation code is expired or invalid.</exception>
+        /// <exception cref="Exception">Thrown when the confirmation code is invalid.</exception>
         public async Task<Transaction> ConfirmTransactionAsync(long transactionId, string confirmationCode)
         {
             var transaction = await _unitOfWork.TransactionRepository.GetByIDAsync(transactionId);
@@ -111,6 +129,5 @@ namespace PaymentSystem.Services.Services
 
             return transaction;
         }
-
     }
 }
