@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PaymentSystem.DataLayer.Entities;
+using PaymentSystem.DataLayer.EntitiesDTO.Payment;
 using PaymentSystem.Services.Interfaces;
 
 
@@ -8,19 +9,30 @@ namespace PaymentSystem.Services.Services
 {
     public class PaymentService : IPaymentService
     {
+        const string TRANSACTION_STATUS_PENDING = "Pending";
+        const string TRANSACTION_STATUS_CANCELED= "Canceled";
+        const string TRANSACTION_STATUS_CONFIRMED = "Confirmed";
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<PaymentService> _logger;
         private readonly ICardService _cardService;
+        private readonly IConfirmationGenerator _confirmationGenerator;
 
-        public PaymentService(IUnitOfWork unitOfWork, ILogger<PaymentService> logger, ICardService cardService)
+        public PaymentService(IUnitOfWork unitOfWork, ILogger<PaymentService> logger, ICardService cardService, IConfirmationGenerator confirmationGenerator)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _cardService = cardService;
+            _confirmationGenerator = confirmationGenerator;
         }
-        public async Task<string> ProcessPaymentAsync(long cardId, decimal amount, string currency)
+        public async Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal amount, string currency)
         {
             var card = await _cardService.GetCardAsync(cardId);
+            if (card == null)
+            {
+                _logger.LogWarning("Card not found. Card ID: {CardId}", cardId);
+                throw new InvalidOperationException("Card not found.");
+            }
 
             if (card.CurrencyType != currency)
             {
@@ -34,25 +46,25 @@ namespace PaymentSystem.Services.Services
                 throw new InvalidOperationException("Insufficient funds.");
             }
 
-            var confirmationCode = "1111"; // Confiramtion code
+            var confirmationCode = await _confirmationGenerator.GenerateConfirmationCodeAsync();
             var transaction = new Transaction
             {
                 CardId = cardId,
                 Amount = amount,
                 CurrencyType = currency,
                 TransactionDate = DateTime.UtcNow,
-                Status = "Pending",
+                Status = TRANSACTION_STATUS_PENDING,
                 ConfirmationCode = confirmationCode,
                 ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(5),
                 Card = card
             };
 
-            _unitOfWork.TransactionRepository.InsertAsync(transaction);
+            await _unitOfWork.TransactionRepository.InsertAsync(transaction);
             await _unitOfWork.SaveAsync(); ;
 
             _logger.LogInformation("Payment initiated. Card ID: {CardId}, Transaction ID: {TransactionId}, Confirmation Code: {ConfirmationCode}", cardId, transaction.Id, confirmationCode);
 
-            return confirmationCode;
+            return new ConfirmPaymentDTO { TransactionId = transaction.Id, ConfirmationCode = confirmationCode };
 
         }
 
@@ -64,6 +76,12 @@ namespace PaymentSystem.Services.Services
             {
                 _logger.LogWarning("Transaction not found. Transaction ID: {TransactionId}", transactionId);
                 throw new InvalidOperationException("Transaction not found.");
+            }
+
+            if (transaction.Status != TRANSACTION_STATUS_PENDING)
+            {
+                _logger.LogWarning("Transaction not pending. Transaction ID: {TransactionId}", transactionId);
+                throw new InvalidOperationException("Transaction already canceled or confirmed.");
             }
 
             if (transaction.ConfirmationCodeExpiresAt < DateTime.UtcNow)
@@ -78,18 +96,11 @@ namespace PaymentSystem.Services.Services
                 throw new Exception("Invalid confirmation code.");
             }
 
-            try
-            {
-                _cardService.DecreaseBalanceAsync(transaction.CardId, transaction.Amount);
-            }
-            catch (Exception ex)
-            {
-                // fix
-                return false;
-            }
-            transaction.Status = "Completed";
+            transaction.Status = TRANSACTION_STATUS_CONFIRMED;
 
             await _unitOfWork.SaveAsync();
+
+            await _cardService.DecreaseBalanceAsync(transaction.CardId, transaction.Amount);
 
             _logger.LogInformation("Transaction completed successfully. Transaction ID: {TransactionId}", transactionId);
             return true;
@@ -104,8 +115,13 @@ namespace PaymentSystem.Services.Services
                 _logger.LogWarning("Transaction not found. Transaction ID: {TransactionId}", transactionId);
                 throw new InvalidOperationException("Transaction not found.");
             }
+            if (transaction.Status != TRANSACTION_STATUS_PENDING)
+            {
+                _logger.LogWarning("Transaction not pending. Transaction ID: {TransactionId}", transactionId);
+                throw new InvalidOperationException("Transaction already canceled or confirmed.");
+            }
 
-            transaction.Status = "Cancelled";
+            transaction.Status = TRANSACTION_STATUS_CANCELED;
             await _unitOfWork.SaveAsync();
 
             _logger.LogInformation("Transaction cancelled. Transaction ID: {TransactionId}", transactionId);

@@ -1,0 +1,20 @@
+﻿using PaymentSystem.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PaymentSystem.Services.Helpers
+{
+    public class ConfirmationGenerator : IConfirmationGenerator
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        public async Task<string> GenerateConfirmationCodeAsync()
+        {
+            var _random = new Random();
+            return new string(Enumerable.Repeat(chars, 6)
+                .Select(s => s[_random.Next(s.Length)]).ToArray());
+        }
+    }
+}

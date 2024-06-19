@@ -18,6 +18,7 @@ namespace PaymentSystem.Helpers
         {
             services.AddScoped<ICardService, CardService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IConfirmationGenerator, ConfirmationGenerator>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaymentSystem.DataLayer.EF;
 
@@ -11,9 +12,11 @@ using PaymentSystem.DataLayer.EF;
 namespace PaymentSystem.DataLayer.Migrations
 {
     [DbContext(typeof(PaymentSystemContext))]
-    partial class PaymentSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20240619085211_AddConfirmationCode")]
+    partial class AddConfirmationCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
