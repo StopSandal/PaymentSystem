@@ -8,15 +8,19 @@
 
   <ItemGroup>
     <Compile Remove="PaymentSystem.DataLayer\**" />
+    <Compile Remove="PaymentSystem.IntegrationTests\**" />
     <Compile Remove="PaymentSystem.Services\**" />
     <Compile Remove="PaymentSystem.UnitTest\**" />
     <Content Remove="PaymentSystem.DataLayer\**" />
+    <Content Remove="PaymentSystem.IntegrationTests\**" />
     <Content Remove="PaymentSystem.Services\**" />
     <Content Remove="PaymentSystem.UnitTest\**" />
     <EmbeddedResource Remove="PaymentSystem.DataLayer\**" />
+    <EmbeddedResource Remove="PaymentSystem.IntegrationTests\**" />
     <EmbeddedResource Remove="PaymentSystem.Services\**" />
     <EmbeddedResource Remove="PaymentSystem.UnitTest\**" />
     <None Remove="PaymentSystem.DataLayer\**" />
+    <None Remove="PaymentSystem.IntegrationTests\**" />
     <None Remove="PaymentSystem.Services\**" />
     <None Remove="PaymentSystem.UnitTest\**" />
   </ItemGroup>
