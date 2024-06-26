@@ -36,7 +36,7 @@ namespace PaymentSystem.Services.Helpers
         {
             // AddTransactionDTO -> Transaction
             CreateMap<AddTransactionDTO, Transaction>()
-                .ForMember(transaction => transaction.TransactionDate, date => date.MapFrom(value => DateTime.Now));
+                .ForMember(transaction => transaction.TransactionDate, date => date.MapFrom(value => DateTime.UtcNow));
 
         }
     }
