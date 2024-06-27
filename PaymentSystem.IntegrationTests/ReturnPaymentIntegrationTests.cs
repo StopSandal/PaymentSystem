@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace PaymentSystem.IntegrationTests
 {
-    public class CancelPaymentIntegrationTests : IClassFixture<PaymentSystemApplicationFactory<Program>>
+    public class ReturnPaymentIntegrationTests : IClassFixture<PaymentSystemApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
         private readonly PaymentSystemApplicationFactory<Program> _factory;
 
-        public CancelPaymentIntegrationTests(PaymentSystemApplicationFactory<Program> factory)
+        public ReturnPaymentIntegrationTests(PaymentSystemApplicationFactory<Program> factory)
         {
             _factory = factory;
             _client = factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -24,11 +24,11 @@ namespace PaymentSystem.IntegrationTests
             });
         }
         [Fact]
-        public async Task POST_CancelPayment_When_TransactionExists_And_Right()
+        public async Task POST_ReturnPayment_When_TransactionExists_And_Right()
         {
             // Arrange
-            var transactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID;
-            var requestUri = $"{TestConstants.CANCEL_PAYMENT_PATH}?transactionId={transactionId}";
+            var transactionId = TestConstants.STATUS_CONFIRMED_TRANSACTION_ID;
+            var requestUri = $"{TestConstants.RETURN_PAYMENT_PATH}?transactionId={transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -37,11 +37,11 @@ namespace PaymentSystem.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
         [Fact]
-        public async Task POST_CancelPayment_When_TransactionExists_But_Already_Canceled()
+        public async Task POST_ReturnPayment_When_TransactionExists_But_Already_Returned()
         {
             // Arrange
-            var transactionId = TestConstants.STATUS_CANCELED_TRANSACTION_ID;
-            var requestUri = $"{TestConstants.CANCEL_PAYMENT_PATH}?transactionId={transactionId}";
+            var transactionId = TestConstants.STATUS_RETURNED_TRANSACTION_ID;
+            var requestUri = $"{TestConstants.RETURN_PAYMENT_PATH}?transactionId={transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -50,11 +50,11 @@ namespace PaymentSystem.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
         [Fact]
-        public async Task POST_CancelPayment_When_TransactionExists_But_Already_Confirmed()
+        public async Task POST_CancelPayment_When_TransactionExists_But_Not_Confirmed()
         {
             // Arrange
-            var transactionId = TestConstants.STATUS_CONFIRMED_TRANSACTION_ID;
-            var requestUri = $"{TestConstants.CANCEL_PAYMENT_PATH}?transactionId={transactionId}";
+            var transactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID;
+            var requestUri = $"{TestConstants.RETURN_PAYMENT_PATH}?transactionId={transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -68,7 +68,7 @@ namespace PaymentSystem.IntegrationTests
         {
             // Arrange
             var transactionId = TestConstants.NOT_EXISTING_TRANSACTION_ID;
-            var requestUri = $"{TestConstants.CANCEL_PAYMENT_PATH}?transactionId={transactionId}";
+            var requestUri = $"{TestConstants.RETURN_PAYMENT_PATH}?transactionId={transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);

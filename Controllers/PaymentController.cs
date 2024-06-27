@@ -64,5 +64,20 @@ namespace PaymentSystem.Controllers
                 return BadRequest(new { Status = "Error", Message = ex.Message });
             }
         }
+
+        [HttpPost("return")]
+        public async Task<IActionResult> ReturnPayment(long transactionId)
+        {
+            try
+            {
+                await _paymentService.ReturnPaymentAsync(transactionId);
+                return Ok(new { Status = "Success" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error returning payment for Transaction ID: {TransactionId}", transactionId);
+                return BadRequest(new { Status = "Error", Message = ex.Message });
+            }
+        }
     }
 }

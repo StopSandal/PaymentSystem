@@ -19,6 +19,7 @@ namespace PaymentSystem.Services.Services
         const string TRANSACTION_STATUS_PENDING = "Pending";
         const string TRANSACTION_STATUS_CANCELED = "Canceled";
         const string TRANSACTION_STATUS_CONFIRMED = "Confirmed";
+        const string TRANSACTION_STATUS_RETUNED = "Returned";
         const string CONFIRMATION_CODE_EXPIRATION_MINUTES = "Confirmation:ConfirmationCodeValidityInMinutes";
 
         private readonly IConfirmationGenerator _confirmationGenerator;
@@ -128,6 +129,33 @@ namespace PaymentSystem.Services.Services
             _logger.LogInformation("Transaction completed successfully. Transaction ID: {TransactionId}", transactionId);
 
             return transaction;
+        }
+
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">Thrown when the transaction is not found, already returned or not confirmed.</exception>
+        public async Task<Transaction> ReturnTransactionAsync(long transactionId)
+        {
+            var transaction = await _unitOfWork.TransactionRepository.GetByIDAsync(transactionId);
+            if (transaction == null)
+            {
+                _logger.LogWarning("Transaction not found. Transaction ID: {TransactionId}", transactionId);
+                throw new InvalidOperationException("Transaction not found.");
+            }
+
+            if (transaction.Status != TRANSACTION_STATUS_CONFIRMED)
+            {
+                _logger.LogWarning("Tried to return transaction. Transaction not confirmed. Transaction ID: {TransactionId}", transactionId);
+                throw new InvalidOperationException("Transaction already returned or not confirmed.");
+            }
+
+            transaction.Status = TRANSACTION_STATUS_RETUNED;
+
+            await _unitOfWork.SaveAsync();
+
+            _logger.LogInformation("Transaction returned successfully. Transaction ID: {TransactionId}", transactionId);
+
+            return transaction;
+
         }
     }
 }

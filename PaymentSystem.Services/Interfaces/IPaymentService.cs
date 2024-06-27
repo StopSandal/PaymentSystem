@@ -31,5 +31,12 @@ namespace PaymentSystem.Services.Interfaces
         /// <param name="transactionId">The ID of the transaction to cancel.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
         Task CancelPaymentAsync(long transactionId);
+
+        /// <summary>
+        /// Returns a payment.
+        /// </summary>
+        /// <param name="transactionId">The ID of the transaction to return.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        Task ReturnPaymentAsync(long transactionId);
     }
 }

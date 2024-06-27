@@ -33,7 +33,7 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.RIGHT_TRANSACTION_ID, 
+                TransactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID, 
                 ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE
             };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
@@ -51,7 +51,7 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.RIGHT_TRANSACTION_ID,
+                TransactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID,
                 ConfirmationCode = TestConstants.WRONG_CONFIRMATION_CODE
             };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);

@@ -66,7 +66,7 @@ namespace PaymentSystem.IntegrationTests
                 ID = TestConstants.NO_LIMIT_CARD_ID,
                 CardName = "InfinityAmountCard",
                 CardNumber = "1234567890",
-                Balance = decimal.MaxValue,
+                Balance = decimal.MaxValue/2,
                 CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
             });
             // Card for not successful test
@@ -82,7 +82,7 @@ namespace PaymentSystem.IntegrationTests
             // Fully right transaction
             await unitOfWork.TransactionRepository.InsertAsync(new Transaction
             {
-                Id = TestConstants.RIGHT_TRANSACTION_ID,
+                Id = TestConstants.STATUS_PENDING_TRANSACTION_ID,
                 ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
                 Status = TestConstants.TRANSACTION_STATUS_PENDING,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
@@ -130,6 +130,17 @@ namespace PaymentSystem.IntegrationTests
                 Id = TestConstants.STATUS_CONFIRMED_TRANSACTION_ID,
                 ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
                 Status = TestConstants.TRANSACTION_STATUS_CONFIRMED,
+                ConfirmationCodeExpiresAt = DateTime.MaxValue,
+                CardId = TestConstants.NO_LIMIT_CARD_ID,
+                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+            });
+            // Transaction already returned
+            await unitOfWork.TransactionRepository.InsertAsync(new Transaction
+            {
+                Id = TestConstants.STATUS_RETURNED_TRANSACTION_ID,
+                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
+                Status = TestConstants.TRANSACTION_STATUS_RETUNED,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
                 CardId = TestConstants.NO_LIMIT_CARD_ID,
                 Amount = TestConstants.RIGHT_MONEY_AMOUNT,

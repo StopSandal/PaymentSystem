@@ -98,5 +98,20 @@ namespace PaymentSystem.Services.Services
 
             _logger.LogInformation("Transaction cancelled. Transaction ID: {TransactionId}", transactionId);
         }
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">Thrown when the transaction is not confirmed or already returned.</exception>
+        public async Task ReturnPaymentAsync(long transactionId)
+        {
+            try
+            {
+                var transaction = await _transactionService.ReturnTransactionAsync(transactionId);
+                await _cardService.IncreaseBalanceAsync(transaction.CardId, transaction.Amount);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning("Transaction can't be returned. Transaction ID: {TransactionId}", transactionId);
+                throw;
+            }
+        }
     }
 }
