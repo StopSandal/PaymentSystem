@@ -33,7 +33,7 @@ namespace PaymentSystem.Services.Services
         /// <exception cref="InvalidOperationException">
         /// Thrown when the card is not found, there is a currency mismatch, or there are insufficient funds.
         /// </exception>
-        public async Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal amount, string currency)
+        public async Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal amount, string currency, decimal unreturnableFee=0)
         {
             var card = await _cardService.GetCardAsync(cardId);
             if (card == null)
@@ -57,7 +57,8 @@ namespace PaymentSystem.Services.Services
             var transaction = await _transactionService.CreateAsync(new AddTransactionDTO
             {
                 CardId = cardId,
-                Amount = amount,
+                TotalAmount = amount,
+                UnreturnableFee = unreturnableFee,
                 CurrencyType = currency
             });
 
@@ -73,7 +74,7 @@ namespace PaymentSystem.Services.Services
             try
             {
                 var transaction = await _transactionService.ConfirmTransactionAsync(transactionId, confirmationCode);
-                await _cardService.DecreaseBalanceAsync(transaction.CardId, transaction.Amount);
+                await _cardService.DecreaseBalanceAsync(transaction.CardId, transaction.TotalAmount);
             }
             catch (InvalidOperationException ex)
             {
@@ -105,7 +106,7 @@ namespace PaymentSystem.Services.Services
             try
             {
                 var transaction = await _transactionService.ReturnTransactionAsync(transactionId);
-                await _cardService.IncreaseBalanceAsync(transaction.CardId, transaction.Amount);
+                await _cardService.IncreaseBalanceAsync(transaction.CardId, transaction.TotalAmount - transaction.UnreturnableFee);
             }
             catch (InvalidOperationException ex)
             {

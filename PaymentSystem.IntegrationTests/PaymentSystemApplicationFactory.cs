@@ -87,7 +87,7 @@ namespace PaymentSystem.IntegrationTests
                 Status = TestConstants.TRANSACTION_STATUS_PENDING,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
                 CardId = TestConstants.NO_LIMIT_CARD_ID,
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
 
             });
@@ -99,7 +99,7 @@ namespace PaymentSystem.IntegrationTests
                 Status = TestConstants.TRANSACTION_STATUS_PENDING,
                 ConfirmationCodeExpiresAt = DateTime.MinValue,
                 CardId = TestConstants.NO_LIMIT_CARD_ID,
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
             });
             // Card with no money
@@ -110,7 +110,7 @@ namespace PaymentSystem.IntegrationTests
                 Status = TestConstants.TRANSACTION_STATUS_PENDING,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
                 CardId = TestConstants.NO_MONEY_CARD_ID,
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
             });
             // Transaction already canceled
@@ -121,7 +121,7 @@ namespace PaymentSystem.IntegrationTests
                 Status = TestConstants.TRANSACTION_STATUS_CANCELED,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
                 CardId = TestConstants.NO_LIMIT_CARD_ID,
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
             });
             // Transaction already confirmed
@@ -132,7 +132,7 @@ namespace PaymentSystem.IntegrationTests
                 Status = TestConstants.TRANSACTION_STATUS_CONFIRMED,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
                 CardId = TestConstants.NO_LIMIT_CARD_ID,
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
             });
             // Transaction already returned
@@ -143,7 +143,7 @@ namespace PaymentSystem.IntegrationTests
                 Status = TestConstants.TRANSACTION_STATUS_RETUNED,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
                 CardId = TestConstants.NO_LIMIT_CARD_ID,
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
             });
             await unitOfWork.SaveAsync();

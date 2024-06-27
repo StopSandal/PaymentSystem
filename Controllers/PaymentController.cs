@@ -24,7 +24,7 @@ namespace PaymentSystem.Controllers
         {
             try
             {
-                var confirmationCode = await _paymentService.ProcessPaymentAsync(request.CardId, request.Amount, request.Currency);
+                var confirmationCode = await _paymentService.ProcessPaymentAsync(request.CardId, request.TotalAmount, request.Currency, request.UnreturnableFee);
                 _logger.LogInformation("Payment request processed successfully for Card ID: {CardId}", request.CardId);
                 return Ok(new { Status = "Success", ConfirmationCode = confirmationCode });
             }

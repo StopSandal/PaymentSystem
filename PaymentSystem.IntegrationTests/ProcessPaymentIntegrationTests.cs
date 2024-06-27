@@ -34,7 +34,7 @@ namespace PaymentSystem.IntegrationTests
             var request = new ProcessPaymentDTO
             {
                 CardId = TestConstants.NO_LIMIT_CARD_ID,  // Using the seeded card ID
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 Currency = TestConstants.RIGHT_CARD_CURRENCY
             };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
@@ -52,7 +52,7 @@ namespace PaymentSystem.IntegrationTests
             var request = new ProcessPaymentDTO
             {
                 CardId = TestConstants.NO_MONEY_CARD_ID,  // Using the seeded card ID
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 Currency = TestConstants.RIGHT_CARD_CURRENCY
             };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
@@ -70,7 +70,7 @@ namespace PaymentSystem.IntegrationTests
             var request = new ProcessPaymentDTO
             {
                 CardId = TestConstants.NO_LIMIT_CARD_ID,  // Using the seeded card ID
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 Currency = TestConstants.WRONG_CARD_CURRENCY
             };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
@@ -88,7 +88,7 @@ namespace PaymentSystem.IntegrationTests
             var request = new ProcessPaymentDTO
             {
                 CardId = TestConstants.NOT_EXISTING_CARD_ID,
-                Amount = TestConstants.RIGHT_MONEY_AMOUNT,
+                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
                 Currency = TestConstants.RIGHT_CARD_CURRENCY
             };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);

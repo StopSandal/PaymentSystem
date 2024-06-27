@@ -41,7 +41,7 @@ namespace PaymentSystem.UnitTest.Services
             var transactionId = 1;
             var confirmationCode = "123456";
             var card = new Card { ID = cardId, CurrencyType = currency, Balance = amount * 2 };
-            var addTransactionDTO = new AddTransactionDTO { CardId = cardId, Amount = amount, CurrencyType = currency };
+            var addTransactionDTO = new AddTransactionDTO { CardId = cardId, TotalAmount = amount, CurrencyType = currency };
             var transaction = new Transaction { Id = transactionId, ConfirmationCode = confirmationCode };
 
             _mockCardService.Setup(cs => cs.GetCardAsync(cardId))
@@ -196,7 +196,7 @@ namespace PaymentSystem.UnitTest.Services
             await _paymentService.ConfirmPaymentAsync(transactionId, confirmationCode);
 
             // Assert
-            _mockCardService.Verify(cs => cs.DecreaseBalanceAsync(transaction.CardId, transaction.Amount), Times.Once);
+            _mockCardService.Verify(cs => cs.DecreaseBalanceAsync(transaction.CardId, transaction.TotalAmount), Times.Once);
         }
 
         [Fact]

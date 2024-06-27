@@ -12,10 +12,12 @@ namespace PaymentSystem.Services.Interfaces
         /// Processes a payment by initiating a transaction.
         /// </summary>
         /// <param name="cardId">The ID of the card to charge.</param>
-        /// <param name="amount">The amount to charge.</param>
+        /// <param name="totalAmount">The Total Amount to charge.</param>
         /// <param name="currency">The currency in which the amount is specified.</param>
+        /// <param name="unreturnableFee">The amount which not going to return from Total Amount. Default value is zero./></param>
+
         /// <returns>A task that represents the asynchronous operation, containing a DTO with payment confirmation details.</returns>
-        Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal amount, string currency);
+        Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal totalAmount, string currency, decimal unreturnableFee = 0);
 
         /// <summary>
         /// Confirms a payment using a confirmation code.

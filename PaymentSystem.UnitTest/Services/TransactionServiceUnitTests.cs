@@ -95,7 +95,7 @@ namespace PaymentSystem.UnitTest.Services
             var newTransactionDTO = new AddTransactionDTO
             {
                 CardId = cardId,
-                Amount = amount,
+                TotalAmount = amount,
                 CurrencyType = currency
             };
             var confirmationCode = "123456";
@@ -103,7 +103,7 @@ namespace PaymentSystem.UnitTest.Services
             {
                 Id = 1,
                 CardId = cardId,
-                Amount = amount,
+                TotalAmount = amount,
                 CurrencyType = currency,
                 Status = TRANSACTION_STATUS_PENDING,
                 ConfirmationCode = confirmationCode,
