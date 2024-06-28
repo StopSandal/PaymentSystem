@@ -24,9 +24,9 @@ namespace PaymentSystem.Controllers
         {
             try
             {
-                var confirmationCode = await _paymentService.ProcessPaymentAsync(request.CardId, request.TotalAmount, request.Currency, request.UnreturnableFee);
+                var processPaymentResponse = await _paymentService.ProcessPaymentAsync(request.CardId, request.TotalAmount, request.Currency, request.UnreturnableFee);
                 _logger.LogInformation("Payment request processed successfully for Card ID: {CardId}", request.CardId);
-                return Ok(new { Status = "Success", ConfirmationCode = confirmationCode });
+                return Ok(new { ProcessPaymentResponse = processPaymentResponse });
             }
             catch (Exception ex)
             {
@@ -50,8 +50,8 @@ namespace PaymentSystem.Controllers
             }
         }
 
-        [HttpPost("cancel")]
-        public async Task<IActionResult> CancelPayment(long transactionId)
+        [HttpPost("cancel/{transactionId}")]
+        public async Task<IActionResult> CancelPayment([FromRoute] long transactionId)
         {
             try
             {
@@ -65,8 +65,8 @@ namespace PaymentSystem.Controllers
             }
         }
 
-        [HttpPost("return")]
-        public async Task<IActionResult> ReturnPayment(long transactionId)
+        [HttpPost("return/{transactionId}")]
+        public async Task<IActionResult> ReturnPayment([FromRoute] long transactionId)
         {
             try
             {
