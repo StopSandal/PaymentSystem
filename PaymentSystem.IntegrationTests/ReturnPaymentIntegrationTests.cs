@@ -22,8 +22,8 @@ namespace PaymentSystem.IntegrationTests
         public async Task POST_ReturnPayment_When_TransactionExists_And_Right()
         {
             // Arrange
-            var transactionId = TestConstants.STATUS_CONFIRMED_TRANSACTION_ID;
-            var requestUri = $"{TestConstants.RETURN_PAYMENT_PATH}?transactionId={transactionId}";
+            var transactionId = TestConstants.StatusConfirmedTransactionId;
+            var requestUri = $"{TestConstants.ReturnPaymentPath\}?transactionId={transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -35,8 +35,8 @@ namespace PaymentSystem.IntegrationTests
         public async Task POST_ReturnPayment_When_TransactionExists_But_Already_Returned()
         {
             // Arrange
-            var transactionId = TestConstants.STATUS_RETURNED_TRANSACTION_ID;
-            var requestUri = $"{TestConstants.RETURN_PAYMENT_PATH}?transactionId={transactionId}";
+            var transactionId = TestConstants.StatusReturnedTransactionId;
+            var requestUri = $"{TestConstants.ReturnPaymentPath\}?transactionId={transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -48,8 +48,8 @@ namespace PaymentSystem.IntegrationTests
         public async Task POST_CancelPayment_When_TransactionExists_But_Not_Confirmed()
         {
             // Arrange
-            var transactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID;
-            var requestUri = $"{TestConstants.RETURN_PAYMENT_PATH}?transactionId={transactionId}";
+            var transactionId = TestConstants.StatusPendingTransactionId;
+            var requestUri = $"{TestConstants.ReturnPaymentPath\}?transactionId={transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -62,8 +62,8 @@ namespace PaymentSystem.IntegrationTests
         public async Task POST_CancelPayment_When_TransactionNotExists()
         {
             // Arrange
-            var transactionId = TestConstants.NOT_EXISTING_TRANSACTION_ID;
-            var requestUri = $"{TestConstants.RETURN_PAYMENT_PATH}?transactionId={transactionId}";
+            var transactionId = TestConstants.NotExistingTransactionId;
+            var requestUri = $"{TestConstants.ReturnPaymentPath\}?transactionId={transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);

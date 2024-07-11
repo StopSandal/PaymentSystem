@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
+using PaymentSystem.Services.Helpers.Constants;
 using PaymentSystem.Services.Interfaces;
 
 namespace PaymentSystem.Services.Services
@@ -13,11 +14,7 @@ namespace PaymentSystem.Services.Services
     /// </summary>
     public class TransactionService : ITransactionService
     {
-        const string TRANSACTION_STATUS_PENDING = "Pending";
-        const string TRANSACTION_STATUS_CANCELED = "Canceled";
-        const string TRANSACTION_STATUS_CONFIRMED = "Confirmed";
-        const string TRANSACTION_STATUS_RETUNED = "Returned";
-        const string CONFIRMATION_CODE_EXPIRATION_MINUTES = "Confirmation:ConfirmationCodeValidityInMinutes";
+        private const string ConfirmationCodeExpirationMinutes = "Confirmation:ConfirmationCodeValidityInMinutes";
 
         private readonly IConfirmationGenerator _confirmationGenerator;
         private readonly IUnitOfWork _unitOfWork;
@@ -60,10 +57,10 @@ namespace PaymentSystem.Services.Services
             var confirmationCode = await _confirmationGenerator.GenerateConfirmationCodeAsync();
 
             newTransaction.ConfirmationCode = confirmationCode;
-            newTransaction.Status = TRANSACTION_STATUS_PENDING;
+            newTransaction.Status = TransactionsConstants.TransactionStatusPending;
 
             var transaction = _mapper.Map<AddTransactionDTO, Transaction>(newTransaction);
-            transaction.ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(_configuration[CONFIRMATION_CODE_EXPIRATION_MINUTES]));
+            transaction.ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(_configuration[ConfirmationCodeExpirationMinutes]));
             await _unitOfWork.TransactionRepository.InsertAsync(transaction);
             await _unitOfWork.SaveAsync();
             return transaction;
@@ -79,13 +76,13 @@ namespace PaymentSystem.Services.Services
                 _logger.LogWarning("Transaction not found. Transaction ID: {TransactionId}", transactionId);
                 throw new InvalidOperationException("Transaction not found.");
             }
-            if (transaction.Status != TRANSACTION_STATUS_PENDING)
+            if (transaction.Status != TransactionsConstants.TransactionStatusPending)
             {
                 _logger.LogWarning("Transaction not pending. Transaction ID: {TransactionId}", transactionId);
                 throw new InvalidOperationException("Transaction already canceled or confirmed.");
             }
 
-            transaction.Status = TRANSACTION_STATUS_CANCELED;
+            transaction.Status = TransactionsConstants.TransactionStatusCanceled;
             await _unitOfWork.SaveAsync();
         }
 
@@ -101,7 +98,7 @@ namespace PaymentSystem.Services.Services
                 throw new InvalidOperationException("Transaction not found.");
             }
 
-            if (transaction.Status != TRANSACTION_STATUS_PENDING)
+            if (transaction.Status != TransactionsConstants.TransactionStatusPending)
             {
                 _logger.LogWarning("Transaction not pending. Transaction ID: {TransactionId}", transactionId);
                 throw new InvalidOperationException("Transaction already canceled or confirmed.");
@@ -119,7 +116,7 @@ namespace PaymentSystem.Services.Services
                 throw new Exception("Invalid confirmation code.");
             }
 
-            transaction.Status = TRANSACTION_STATUS_CONFIRMED;
+            transaction.Status = TransactionsConstants.TransactionStatusConfirmed;
 
             await _unitOfWork.SaveAsync();
 
@@ -139,13 +136,13 @@ namespace PaymentSystem.Services.Services
                 throw new InvalidOperationException("Transaction not found.");
             }
 
-            if (transaction.Status != TRANSACTION_STATUS_CONFIRMED)
+            if (transaction.Status != TransactionsConstants.TransactionStatusConfirmed)
             {
                 _logger.LogWarning("Tried to return transaction. Transaction not confirmed. Transaction ID: {TransactionId}", transactionId);
                 throw new InvalidOperationException("Transaction already returned or not confirmed.");
             }
 
-            transaction.Status = TRANSACTION_STATUS_RETUNED;
+            transaction.Status = TransactionsConstants.TransactionStatusReturned;
 
             await _unitOfWork.SaveAsync();
 

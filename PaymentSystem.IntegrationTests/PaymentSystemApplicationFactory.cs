@@ -57,88 +57,88 @@ namespace PaymentSystem.IntegrationTests
             // Card for successful test
             await unitOfWork.CardRepository.InsertAsync(new Card
             {
-                ID = TestConstants.NO_LIMIT_CARD_ID,
+                ID = TestConstants.NoLimitCardId,
                 CardName = "InfinityAmountCard",
                 CardNumber = "1234567890",
                 Balance = decimal.MaxValue / 2,
-                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+                CurrencyType = TestConstants.RightCardCurrency
             });
             // Card for not successful test
             await unitOfWork.CardRepository.InsertAsync(new Card
             {
-                ID = TestConstants.NO_MONEY_CARD_ID,
+                ID = TestConstants.NoMoneyCardId,
                 CardName = "ZeroAmountCard",
                 CardNumber = "1234567890",
                 Balance = 0,
-                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+                CurrencyType = TestConstants.RightCardCurrency
             });
 
             // Fully right transaction
             await unitOfWork.TransactionRepository.InsertAsync(new Transaction
             {
-                Id = TestConstants.STATUS_PENDING_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
-                Status = TestConstants.TRANSACTION_STATUS_PENDING,
+                Id = TestConstants.StatusPendingTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode,
+                Status = TestConstants.TransactionStatusPending,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
-                CardId = TestConstants.NO_LIMIT_CARD_ID,
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NoLimitCardId,
+                TotalAmount = TestConstants.RightMoneyAmount,
+                CurrencyType = TestConstants.RightCardCurrency
 
             });
             // Transaction expired
             await unitOfWork.TransactionRepository.InsertAsync(new Transaction
             {
-                Id = TestConstants.EXPIRED_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
-                Status = TestConstants.TRANSACTION_STATUS_PENDING,
+                Id = TestConstants.ExpiredTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode,
+                Status = TestConstants.TransactionStatusPending,
                 ConfirmationCodeExpiresAt = DateTime.MinValue,
-                CardId = TestConstants.NO_LIMIT_CARD_ID,
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NoLimitCardId,
+                TotalAmount = TestConstants.RightMoneyAmount,
+                CurrencyType = TestConstants.RightCardCurrency
             });
             // Card with no money
             await unitOfWork.TransactionRepository.InsertAsync(new Transaction
             {
-                Id = TestConstants.NOT_ENOUGH_MONEY_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
-                Status = TestConstants.TRANSACTION_STATUS_PENDING,
+                Id = TestConstants.NotEnoughMoneyTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode,
+                Status = TestConstants.TransactionStatusPending,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
-                CardId = TestConstants.NO_MONEY_CARD_ID,
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NoMoneyCardId,
+                TotalAmount = TestConstants.RightMoneyAmount,
+                CurrencyType = TestConstants.RightCardCurrency
             });
             // Transaction already canceled
             await unitOfWork.TransactionRepository.InsertAsync(new Transaction
             {
-                Id = TestConstants.STATUS_CANCELED_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
-                Status = TestConstants.TRANSACTION_STATUS_CANCELED,
+                Id = TestConstants.StatusCanceledTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode,
+                Status = TestConstants.TransactionStatusCanceled,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
-                CardId = TestConstants.NO_LIMIT_CARD_ID,
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NoLimitCardId,
+                TotalAmount = TestConstants.RightMoneyAmount,
+                CurrencyType = TestConstants.RightCardCurrency
             });
             // Transaction already confirmed
             await unitOfWork.TransactionRepository.InsertAsync(new Transaction
             {
-                Id = TestConstants.STATUS_CONFIRMED_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
-                Status = TestConstants.TRANSACTION_STATUS_CONFIRMED,
+                Id = TestConstants.StatusConfirmedTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode,
+                Status = TestConstants.TransactionStatusConfirmed,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
-                CardId = TestConstants.NO_LIMIT_CARD_ID,
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NoLimitCardId,
+                TotalAmount = TestConstants.RightMoneyAmount,
+                CurrencyType = TestConstants.RightCardCurrency
             });
             // Transaction already returned
             await unitOfWork.TransactionRepository.InsertAsync(new Transaction
             {
-                Id = TestConstants.STATUS_RETURNED_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE,
-                Status = TestConstants.TRANSACTION_STATUS_RETUNED,
+                Id = TestConstants.StatusReturnedTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode,
+                Status = TestConstants.TransactionStatusReturned,
                 ConfirmationCodeExpiresAt = DateTime.MaxValue,
-                CardId = TestConstants.NO_LIMIT_CARD_ID,
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NoLimitCardId,
+                TotalAmount = TestConstants.RightMoneyAmount,
+                CurrencyType = TestConstants.RightCardCurrency
             });
             await unitOfWork.SaveAsync();
         }

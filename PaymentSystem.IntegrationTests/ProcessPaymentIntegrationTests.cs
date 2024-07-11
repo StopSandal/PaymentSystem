@@ -27,14 +27,14 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ProcessPaymentDTO
             {
-                CardId = TestConstants.NO_LIMIT_CARD_ID,  // Using the seeded card ID
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                Currency = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NoLimitCardId,  // Using the seeded card ID
+                TotalAmount = TestConstants.RightMoneyAmount,
+                Currency = TestConstants.RightCardCurrency
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.PROCESS_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ProcessPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -45,14 +45,14 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ProcessPaymentDTO
             {
-                CardId = TestConstants.NO_MONEY_CARD_ID,  // Using the seeded card ID
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                Currency = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NoMoneyCardId,  // Using the seeded card ID
+                TotalAmount = TestConstants.RightMoneyAmount,
+                Currency = TestConstants.RightCardCurrency
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.PROCESS_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ProcessPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -63,14 +63,14 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ProcessPaymentDTO
             {
-                CardId = TestConstants.NO_LIMIT_CARD_ID,  // Using the seeded card ID
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                Currency = TestConstants.WRONG_CARD_CURRENCY
+                CardId = TestConstants.NoLimitCardId,  // Using the seeded card ID
+                TotalAmount = TestConstants.RightMoneyAmount,
+                Currency = TestConstants.WrongCardCurrency
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.PROCESS_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ProcessPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -81,14 +81,14 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ProcessPaymentDTO
             {
-                CardId = TestConstants.NOT_EXISTING_CARD_ID,
-                TotalAmount = TestConstants.RIGHT_MONEY_AMOUNT,
-                Currency = TestConstants.RIGHT_CARD_CURRENCY
+                CardId = TestConstants.NotExistingCardId,
+                TotalAmount = TestConstants.RightMoneyAmount,
+                Currency = TestConstants.RightCardCurrency
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.PROCESS_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ProcessPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

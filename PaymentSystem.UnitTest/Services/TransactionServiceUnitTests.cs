@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
+using PaymentSystem.Services.Helpers.Constants;
 using PaymentSystem.Services.Interfaces;
 using PaymentSystem.Services.Services;
 using System.Linq.Expressions;
@@ -12,11 +13,8 @@ namespace PaymentSystem.UnitTest.Services
 {
     public class TransactionServiceTests
     {
-        private const string TRANSACTION_STATUS_PENDING = "Pending";
-        private const string TRANSACTION_STATUS_CANCELED = "Canceled";
-        private const string TRANSACTION_STATUS_CONFIRMED = "Confirmed";
-        const string CONFIRMATION_CODE_EXPIRATION_MINUTES = "Confirmation:ConfirmationCodeValidityInMinutes";
-        private const int CONFIRMATION_CODE_EXPIRATION_MINUTES_IN_NUMBER = 5;
+        private const string ConfirmationCodeExpirationMinutes = "Confirmation:ConfirmationCodeValidityInMinutes";
+        private const int ConfirmationCodeExpirationMinutesInNumber = 5;
 
         private readonly Mock<IConfirmationGenerator> _mockConfirmationGenerator;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
@@ -100,14 +98,14 @@ namespace PaymentSystem.UnitTest.Services
                 CardId = cardId,
                 TotalAmount = amount,
                 CurrencyType = currency,
-                Status = TRANSACTION_STATUS_PENDING,
+                Status = TransactionsConstants.TransactionStatusPending,
                 ConfirmationCode = confirmationCode,
                 TransactionDate = DateTime.UtcNow,
-                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(CONFIRMATION_CODE_EXPIRATION_MINUTES_IN_NUMBER)
+                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(ConfirmationCodeExpirationMinutesInNumber)
             };
             _mockConfirmationGenerator.Setup(cg => cg.GenerateConfirmationCodeAsync()).ReturnsAsync(confirmationCode);
             _mockMapper.Setup(m => m.Map<AddTransactionDTO, Transaction>(newTransactionDTO)).Returns(transaction);
-            _mockConfiguration.Setup(cnf => cnf[CONFIRMATION_CODE_EXPIRATION_MINUTES]).Returns(CONFIRMATION_CODE_EXPIRATION_MINUTES_IN_NUMBER.ToString());
+            _mockConfiguration.Setup(cnf => cnf[ConfirmationCodeExpirationMinutes]).Returns(ConfirmationCodeExpirationMinutesInNumber.ToString());
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.InsertAsync(transaction))
                 .Returns(Task.FromResult(transaction));
             _mockUnitOfWork.Setup(uow => uow.SaveAsync())
@@ -128,14 +126,14 @@ namespace PaymentSystem.UnitTest.Services
         {
             // Arrange
             var transactionId = 1L;
-            var transaction = new Transaction { Id = transactionId, Status = TRANSACTION_STATUS_PENDING };
+            var transaction = new Transaction { Id = transactionId, Status = TransactionsConstants.TransactionStatusPending };
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
             // Act
             await _transactionService.CancelTransactionAsync(transactionId);
 
             // Assert
-            Assert.Equal(TRANSACTION_STATUS_CANCELED, transaction.Status);
+            Assert.Equal(TransactionsConstants.TransactionStatusCanceled, transaction.Status);
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Once);
         }
 
@@ -144,7 +142,7 @@ namespace PaymentSystem.UnitTest.Services
         {
             // Arrange
             var transactionId = 1L;
-            var transaction = new Transaction { Id = transactionId, Status = TRANSACTION_STATUS_CONFIRMED };
+            var transaction = new Transaction { Id = transactionId, Status = TransactionsConstants.TransactionStatusConfirmed };
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
             // Act and Assert
@@ -160,9 +158,9 @@ namespace PaymentSystem.UnitTest.Services
             var transaction = new Transaction
             {
                 Id = transactionId,
-                Status = TRANSACTION_STATUS_PENDING,
+                Status = TransactionsConstants.TransactionStatusPending,
                 ConfirmationCode = confirmationCode,
-                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(CONFIRMATION_CODE_EXPIRATION_MINUTES_IN_NUMBER)
+                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(ConfirmationCodeExpirationMinutesInNumber)
             };
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
@@ -170,7 +168,7 @@ namespace PaymentSystem.UnitTest.Services
             var result = await _transactionService.ConfirmTransactionAsync(transactionId, confirmationCode);
 
             // Assert
-            Assert.Equal(TRANSACTION_STATUS_CONFIRMED, transaction.Status);
+            Assert.Equal(TransactionsConstants.TransactionStatusConfirmed, transaction.Status);
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Once);
             Assert.Equal(transaction, result);
         }
@@ -184,9 +182,9 @@ namespace PaymentSystem.UnitTest.Services
             var transaction = new Transaction
             {
                 Id = transactionId,
-                Status = TRANSACTION_STATUS_CANCELED,
+                Status = TransactionsConstants.TransactionStatusCanceled,
                 ConfirmationCode = confirmationCode,
-                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(CONFIRMATION_CODE_EXPIRATION_MINUTES_IN_NUMBER)
+                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(ConfirmationCodeExpirationMinutesInNumber)
             };
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
@@ -204,9 +202,9 @@ namespace PaymentSystem.UnitTest.Services
             var transaction = new Transaction
             {
                 Id = transactionId,
-                Status = TRANSACTION_STATUS_PENDING,
+                Status = TransactionsConstants.TransactionStatusPending,
                 ConfirmationCode = confirmationCode,
-                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(-CONFIRMATION_CODE_EXPIRATION_MINUTES_IN_NUMBER)
+                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(-ConfirmationCodeExpirationMinutesInNumber)
             };
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
@@ -224,9 +222,9 @@ namespace PaymentSystem.UnitTest.Services
             var transaction = new Transaction
             {
                 Id = transactionId,
-                Status = TRANSACTION_STATUS_PENDING,
+                Status = TransactionsConstants.TransactionStatusPending,
                 ConfirmationCode = "654321",
-                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(CONFIRMATION_CODE_EXPIRATION_MINUTES_IN_NUMBER)
+                ConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(ConfirmationCodeExpirationMinutesInNumber)
             };
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 

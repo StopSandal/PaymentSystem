@@ -29,13 +29,13 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE
+                TransactionId = TestConstants.StatusPendingTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.CONFIRM_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ConfirmPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -47,13 +47,13 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.WRONG_CONFIRMATION_CODE
+                TransactionId = TestConstants.StatusPendingTransactionId,
+                ConfirmationCode = TestConstants.WrongConfirmationCode
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.CONFIRM_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ConfirmPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -64,13 +64,13 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.EXPIRED_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE
+                TransactionId = TestConstants.ExpiredTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.CONFIRM_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ConfirmPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -81,13 +81,13 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.NOT_ENOUGH_MONEY_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE
+                TransactionId = TestConstants.NotEnoughMoneyTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.CONFIRM_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ConfirmPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -98,13 +98,13 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.STATUS_CANCELED_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE
+                TransactionId = TestConstants.StatusCanceledTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.CONFIRM_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ConfirmPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -115,13 +115,13 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.STATUS_CONFIRMED_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE
+                TransactionId = TestConstants.StatusConfirmedTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.CONFIRM_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ConfirmPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -133,13 +133,13 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.NOT_EXISTING_TRANSACTION_ID,
-                ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE
+                TransactionId = TestConstants.NotExistingTransactionId,
+                ConfirmationCode = TestConstants.RightConfirmationCode
             };
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MediaType);
 
             // Act
-            var response = await _client.PostAsync(TestConstants.CONFIRM_PAYMENT_PATH, content);
+            var response = await _client.PostAsync(TestConstants.ConfirmPaymentPath, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
