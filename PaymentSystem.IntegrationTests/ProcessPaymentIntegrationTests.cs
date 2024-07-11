@@ -1,16 +1,10 @@
-﻿using Azure.Core;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Newtonsoft.Json;
 using PaymentSystem.DataLayer.EntitiesDTO.Payment;
 using PaymentSystem.IntegrationTests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PaymentSystem.IntegrationTests
 {

@@ -1,13 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using PaymentSystem.DataLayer.Entities;
-using PaymentSystem.DataLayer.EntitiesDTO.Payment;
 using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
 using PaymentSystem.Services.Interfaces;
 using PaymentSystem.Services.Services;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace PaymentSystem.UnitTest.Services
 {

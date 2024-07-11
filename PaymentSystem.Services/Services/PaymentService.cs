@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using PaymentSystem.DataLayer.Entities;
+﻿using Microsoft.Extensions.Logging;
 using PaymentSystem.DataLayer.EntitiesDTO.Payment;
 using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
 using PaymentSystem.Services.Interfaces;
@@ -33,7 +31,7 @@ namespace PaymentSystem.Services.Services
         /// <exception cref="InvalidOperationException">
         /// Thrown when the card is not found, there is a currency mismatch, or there are insufficient funds.
         /// </exception>
-        public async Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal amount, string currency, decimal unreturnableFee=0)
+        public async Task<ConfirmPaymentDTO> ProcessPaymentAsync(long cardId, decimal amount, string currency, decimal unreturnableFee = 0)
         {
             var card = await _cardService.GetCardAsync(cardId);
             if (card == null)

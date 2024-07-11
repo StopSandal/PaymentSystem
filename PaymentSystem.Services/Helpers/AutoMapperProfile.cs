@@ -1,19 +1,13 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Card;
 using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaymentSystem.Services.Helpers
 {
     internal class AutoMapperProfile : Profile
     {
-        
+
         public AutoMapperProfile()
         {
             ConfigEntitiesMap();

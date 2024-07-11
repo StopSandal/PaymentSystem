@@ -1,14 +1,11 @@
-﻿using Moq;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
+using Moq;
 using PaymentSystem.DataLayer.Entities;
+using PaymentSystem.DataLayer.EntitiesDTO.Card;
 using PaymentSystem.Services.Interfaces;
 using PaymentSystem.Services.Services;
-using System.Threading.Tasks;
-using Xunit;
-using PaymentSystem.DataLayer.EntitiesDTO.Card;
 using System.Linq.Expressions;
-using System;
 
 namespace PaymentSystem.UnitTest.Services
 {
@@ -154,7 +151,7 @@ namespace PaymentSystem.UnitTest.Services
             var wrongCardNumber = "BadNumber";
             var expectedCard = new Card { ID = 2L, CardNumber = cardNumber };
             var unexpectedCard = new Card { ID = 1L, CardNumber = wrongCardNumber };
-            var cardList = new List<Card> { unexpectedCard,expectedCard };
+            var cardList = new List<Card> { unexpectedCard, expectedCard };
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetAsync(
                   It.IsAny<Expression<Func<Card, bool>>>(),

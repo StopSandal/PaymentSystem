@@ -6,12 +6,7 @@ using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
 using PaymentSystem.Services.Interfaces;
 using PaymentSystem.Services.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace PaymentSystem.UnitTest.Services
 {
@@ -66,7 +61,7 @@ namespace PaymentSystem.UnitTest.Services
             var result = await _transactionService.GetAllTransactionsAsync();
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
             Assert.Equal(transactions, result);
         }
 

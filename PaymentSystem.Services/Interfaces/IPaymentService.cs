@@ -1,5 +1,4 @@
 ﻿using PaymentSystem.DataLayer.EntitiesDTO.Payment;
-using System.Threading.Tasks;
 
 namespace PaymentSystem.Services.Interfaces
 {

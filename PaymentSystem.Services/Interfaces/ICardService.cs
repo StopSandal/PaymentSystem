@@ -1,7 +1,5 @@
 ﻿using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Card;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace PaymentSystem.Services.Interfaces
 {

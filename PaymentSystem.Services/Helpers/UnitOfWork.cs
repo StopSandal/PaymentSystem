@@ -1,12 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PaymentSystem.DataLayer.EF;
+﻿using PaymentSystem.DataLayer.EF;
 using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaymentSystem.Services.Helpers
 {

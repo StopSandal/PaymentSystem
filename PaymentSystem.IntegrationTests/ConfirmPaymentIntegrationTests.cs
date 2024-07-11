@@ -3,12 +3,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using PaymentSystem.DataLayer.EntitiesDTO.Payment;
 using PaymentSystem.IntegrationTests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PaymentSystem.IntegrationTests
 {
@@ -33,7 +29,7 @@ namespace PaymentSystem.IntegrationTests
             // Arrange
             var request = new ConfirmPaymentDTO
             {
-                TransactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID, 
+                TransactionId = TestConstants.STATUS_PENDING_TRANSACTION_ID,
                 ConfirmationCode = TestConstants.RIGHT_CONFIRMATION_CODE
             };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, TestConstants.MEDIA_TYPE);

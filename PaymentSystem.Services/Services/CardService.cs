@@ -3,10 +3,6 @@ using Microsoft.Extensions.Logging;
 using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Card;
 using PaymentSystem.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PaymentSystem.Services.Services
 {

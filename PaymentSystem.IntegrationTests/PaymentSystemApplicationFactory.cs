@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentSystem.DataLayer.EF;
 using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.IntegrationTests.Helpers;
 using PaymentSystem.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaymentSystem.IntegrationTests
 {
@@ -61,12 +55,12 @@ namespace PaymentSystem.IntegrationTests
         private async void SeedDatabase(IUnitOfWork unitOfWork)
         {
             // Card for successful test
-            await unitOfWork.CardRepository.InsertAsync(new Card 
-            { 
+            await unitOfWork.CardRepository.InsertAsync(new Card
+            {
                 ID = TestConstants.NO_LIMIT_CARD_ID,
                 CardName = "InfinityAmountCard",
                 CardNumber = "1234567890",
-                Balance = decimal.MaxValue/2,
+                Balance = decimal.MaxValue / 2,
                 CurrencyType = TestConstants.RIGHT_CARD_CURRENCY
             });
             // Card for not successful test
