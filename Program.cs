@@ -32,6 +32,9 @@ public partial class Program
 
         var app = builder.Build();
 
+        // migrate DB
+        app.ApplyMigrations<PaymentSystemContext>();
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
