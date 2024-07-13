@@ -40,6 +40,7 @@ namespace PaymentSystem.Services.Services
                 if (card == null)
                 {
                     _logger.LogWarning("Card with ID: {CardId} not found", id);
+                    throw new ArgumentNullException("Card doesn't exists");
                 }
                 return card;
             }
@@ -61,6 +62,7 @@ namespace PaymentSystem.Services.Services
                 if (card == null)
                 {
                     _logger.LogWarning("Card with card number: {CardNumber} not found", cardNumber);
+                    throw new ArgumentNullException("Card doesn't exists");
                 }
                 return card;
             }
@@ -151,6 +153,11 @@ namespace PaymentSystem.Services.Services
                 await _unitOfWork.CardRepository.DeleteAsync(id);
                 await _unitOfWork.SaveAsync();
                 _logger.LogInformation("Card deleted successfully with ID: {CardId}", id);
+            }
+            catch (ArgumentNullException ex)
+            {
+                _logger.LogError(ex, "Error deleting card with ID: {CardId}", id);
+                throw new Exception("Card doesn't exists");
             }
             catch (Exception ex)
             {
