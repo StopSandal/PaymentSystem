@@ -111,6 +111,7 @@ namespace PaymentSystem.Services.Services
                 _logger.LogWarning("Transaction can't be returned. Transaction ID: {TransactionId}", transactionId);
                 throw;
             }
+            _logger.LogInformation("Transaction returned. Transaction ID: {TransactionId}", transactionId);
         }
     }
 }

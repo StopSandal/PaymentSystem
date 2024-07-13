@@ -23,7 +23,7 @@ namespace PaymentSystem.IntegrationTests
         {
             // Arrange
             var transactionId = TestConstants.StatusConfirmedTransactionId;
-            var requestUri = $"{TestConstants.ReturnPaymentPath\}?transactionId={transactionId}";
+            var requestUri = $"{TestConstants.ReturnPaymentPath}/{transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -36,7 +36,7 @@ namespace PaymentSystem.IntegrationTests
         {
             // Arrange
             var transactionId = TestConstants.StatusReturnedTransactionId;
-            var requestUri = $"{TestConstants.ReturnPaymentPath\}?transactionId={transactionId}";
+            var requestUri = $"{TestConstants.ReturnPaymentPath}/{transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -49,7 +49,7 @@ namespace PaymentSystem.IntegrationTests
         {
             // Arrange
             var transactionId = TestConstants.StatusPendingTransactionId;
-            var requestUri = $"{TestConstants.ReturnPaymentPath\}?transactionId={transactionId}";
+            var requestUri = $"{TestConstants.ReturnPaymentPath}/{transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);
@@ -63,7 +63,7 @@ namespace PaymentSystem.IntegrationTests
         {
             // Arrange
             var transactionId = TestConstants.NotExistingTransactionId;
-            var requestUri = $"{TestConstants.ReturnPaymentPath\}?transactionId={transactionId}";
+            var requestUri = $"{TestConstants.ReturnPaymentPath}/{transactionId}";
 
             // Act
             var response = await _client.PostAsync(requestUri, null);

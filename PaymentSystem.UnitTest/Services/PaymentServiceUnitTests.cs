@@ -288,5 +288,73 @@ namespace PaymentSystem.UnitTest.Services
                     (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
         }
+
+        [Fact]
+        public async Task ReturnPaymentAsync_ShouldCancelTransaction_WhenTransactionExists()
+        {
+            // Arrange
+            decimal amount = 100;
+            decimal unreturnableFee = 30;
+            var transactionId = 1;
+
+            var transaction = new Transaction { Id = transactionId, TotalAmount = amount + unreturnableFee, UnreturnableFee = unreturnableFee };
+
+            _mockTransactionService.Setup(ts => ts.ReturnTransactionAsync(transactionId))
+                                  .ReturnsAsync(transaction);
+
+            // Act
+            await _paymentService.ReturnPaymentAsync(transactionId);
+
+            // Assert
+            _mockTransactionService.Verify(ts => ts.ReturnTransactionAsync(transactionId), Times.Once);
+            _mockLogger.Verify(
+                    x => x.Log(
+                        LogLevel.Information,
+                        It.IsAny<EventId>(),
+                        It.IsAny<It.IsAnyType>(),
+                        It.IsAny<Exception>(),
+                        (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+                    Times.Once);
+            _mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Warning,
+                    It.IsAny<EventId>(),
+                    It.IsAny<It.IsAnyType>(),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task CancelPaymentAsync_ShouldThrowException_WhenTransactionNotBeReturned()
+        {
+            // Arrange
+            long transactionId = 1;
+
+            _mockTransactionService.Setup(ts => ts.ReturnTransactionAsync(transactionId))
+                                   .ThrowsAsync(new InvalidOperationException("Transaction not returned."));
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _paymentService.ReturnPaymentAsync(transactionId));
+
+            Assert.Equal("Transaction not returned.", exception.Message);
+            _mockLogger.Verify(
+                    x => x.Log(
+                        LogLevel.Information,
+                        It.IsAny<EventId>(),
+                        It.IsAny<It.IsAnyType>(),
+                        It.IsAny<Exception>(),
+                        (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+                    Times.Never);
+            _mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Warning,
+                    It.IsAny<EventId>(),
+                    It.IsAny<It.IsAnyType>(),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+                Times.Once);
+        }
     }
 }
