@@ -19,7 +19,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpPost("process")]
-        public async Task<IActionResult> ProcessPayment([FromBody] ProcessPaymentDTO request)
+        public async Task<IActionResult> ProcessPaymentAsync([FromBody] ProcessPaymentDTO request)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpPost("confirm")]
-        public async Task<IActionResult> ConfirmPayment([FromBody] ConfirmPaymentDTO request)
+        public async Task<IActionResult> ConfirmPaymentAsync([FromBody] ConfirmPaymentDTO request)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpPost("cancel/{transactionId}")]
-        public async Task<IActionResult> CancelPayment([FromRoute] long transactionId)
+        public async Task<IActionResult> CancelPaymentAsync([FromRoute] long transactionId)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpPost("return/{transactionId}")]
-        public async Task<IActionResult> ReturnPayment([FromRoute] long transactionId)
+        public async Task<IActionResult> ReturnPaymentAsync([FromRoute] long transactionId)
         {
             try
             {

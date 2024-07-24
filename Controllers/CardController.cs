@@ -19,7 +19,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCard(long id)
+        public async Task<IActionResult> GetCardAsync(long id)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpGet("byCardNumber/{cardNumber}")]
-        public async Task<IActionResult> GetCardByCardNumber(string cardNumber)
+        public async Task<IActionResult> GetCardByCardNumberAsync(string cardNumber)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCards()
+        public async Task<IActionResult> GetCardsAsync()
         {
             try
             {
@@ -72,7 +72,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCard([FromBody] AddCardDTO newCard)
+        public async Task<IActionResult> CreateCardAsync([FromBody] AddCardDTO newCard)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCard(long id, [FromBody] EditCardDTO editCard)
+        public async Task<IActionResult> UpdateCardAsync(long id, [FromBody] EditCardDTO editCard)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCard(long id)
+        public async Task<IActionResult> DeleteCardAsync(long id)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpPost("increaseBalance")]
-        public async Task<IActionResult> IncreaseBalance([FromBody] BalanceUpdateDTO balanceUpdate)
+        public async Task<IActionResult> IncreaseBalanceAsync([FromBody] BalanceUpdateDTO balanceUpdate)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace PaymentSystem.Controllers
         }
 
         [HttpPost("decreaseBalance")]
-        public async Task<IActionResult> DecreaseBalance([FromBody] BalanceUpdateDTO balanceUpdate)
+        public async Task<IActionResult> DecreaseBalanceAsync([FromBody] BalanceUpdateDTO balanceUpdate)
         {
             try
             {
