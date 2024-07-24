@@ -14,10 +14,10 @@ namespace PaymentSystem.DataLayer.Migrations
 
             List<object[]> transactionsList = new List<object[]>();
 
-             for (int startTransactionId = 0; startTransactionId < 150; startTransactionId++)
-             {
-                 transactionsList.Add(new object[]
-                 {
+            for (int startTransactionId = 0; startTransactionId < 150; startTransactionId++)
+            {
+                transactionsList.Add(new object[]
+                {
                  startTransactionId++, // Id
                  3, // CardId
                  10.00m, // TotalAmount
@@ -27,8 +27,8 @@ namespace PaymentSystem.DataLayer.Migrations
                  "Confirmed", // Status
                  $"CONFIRM{startTransactionId}", // ConfirmationCode
                  DateTime.UtcNow, // ConfirmationCodeExpiresAt
-                 });
-             }
+                });
+            }
 
             object[,] transaction = new object[transactionsList.Count, transactionsList[0].Length];
             for (int i = 0; i < transactionsList.Count; i++)
