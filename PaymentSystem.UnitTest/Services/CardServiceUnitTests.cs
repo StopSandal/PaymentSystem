@@ -37,9 +37,8 @@ namespace PaymentSystem.UnitTest.Services
             var result = await _cardService.GetCardAsync(cardId);
 
             // Assert
-            Assert.NotNull(result);
             Assert.Equal(cardId, result.ID);
-            _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
+                _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
         }
 
         [Fact]
@@ -79,7 +78,6 @@ namespace PaymentSystem.UnitTest.Services
             var result = await _cardService.GetCardsAsync();
 
             // Assert
-            Assert.NotNull(result);
             Assert.Equal(2, result.Count());
             Assert.Equal("1234567890123456", result.First().CardNumber);
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetAsync(
@@ -146,7 +144,6 @@ namespace PaymentSystem.UnitTest.Services
         public async Task GetCardByCardNumberAsync_ShouldReturnCard_WhenCardExists()
         {
             // Arrange
-            // Arrange
             var cardNumber = "1234567890";
             var wrongCardNumber = "BadNumber";
             var expectedCard = new Card { ID = 2L, CardNumber = cardNumber };
@@ -167,7 +164,6 @@ namespace PaymentSystem.UnitTest.Services
             var result = await _cardService.GetCardByCardNumberAsync(cardNumber);
 
             // Assert
-            Assert.NotNull(result);
             Assert.Equal(cardNumber, result.CardNumber);
         }
         [Fact]
@@ -222,8 +218,10 @@ namespace PaymentSystem.UnitTest.Services
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync((Card?)null);
 
-            // Act & Assert
+            // Act
             await Assert.ThrowsAsync<InvalidDataException>(() => _cardService.UpdateCardAsync(cardId, editCardDTO));
+
+            //Assert
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
