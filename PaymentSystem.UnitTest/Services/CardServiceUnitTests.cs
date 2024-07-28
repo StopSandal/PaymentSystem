@@ -5,6 +5,7 @@ using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Card;
 using PaymentSystem.Services.Interfaces;
 using PaymentSystem.Services.Services;
+using PaymentSystem.UnitTest.Helpers;
 using System.Linq.Expressions;
 
 namespace PaymentSystem.UnitTest.Services
@@ -28,8 +29,9 @@ namespace PaymentSystem.UnitTest.Services
         public async Task GetCardAsync_ShouldReturnCard_WhenCardExists()
         {
             // Arrange
-            var cardId = 1L;
-            var expectedCard = new Card { ID = cardId, CardNumber = "1234567890123456" };
+            var cardId = UnitTestConstants.ExistingCardId;
+            var cardNumber = UnitTestConstants.RightCardNumber;
+            var expectedCard = new Card { ID = cardId, CardNumber = cardNumber };
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync(expectedCard);
 
@@ -38,22 +40,23 @@ namespace PaymentSystem.UnitTest.Services
 
             // Assert
             Assert.Equal(cardId, result.ID);
-                _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
+            _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
         }
 
         [Fact]
-        public async Task GetCardAsync_ShouldReturnNull_WhenCardDoesNotExist()
+        public async Task GetCardAsync_ShouldThrowsException_WhenCardDoesNotExist()
         {
             // Arrange
-            var cardId = 1L;
+            var cardId = UnitTestConstants.NotExistingCardId;
+            Card nullCard = null;
+
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
-                           .ReturnsAsync((Card)null);
+                           .ReturnsAsync(nullCard);
 
             // Act
-            var result = await _cardService.GetCardAsync(cardId);
+            await Assert.ThrowsAsync<ArgumentNullException>( async () => await _cardService.GetCardAsync(cardId));
 
             // Assert
-            Assert.Null(result);
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
         }
         [Fact]
@@ -62,12 +65,12 @@ namespace PaymentSystem.UnitTest.Services
             // Arrange
             var expectedCards = new List<Card>
             {
-                new Card { ID = 1, CardNumber = "1234567890123456" },
-                new Card { ID = 2, CardNumber = "6543210987654321" }
+                new Card { ID = UnitTestConstants.ExistingCardId, CardNumber = UnitTestConstants.RightCardNumber },
+                new Card { ID = UnitTestConstants.OtherExistingCardId, CardNumber = UnitTestConstants.OtherRightCardNumber }
             };
             _mockUnitOfWork.Setup(
                 uow => uow.CardRepository.GetAsync(
-                    It.IsAny<System.Linq.Expressions.Expression<Func<Card, bool>>>(),
+                    It.IsAny<Expression<Func<Card, bool>>>(),
                     It.IsAny<Func<IQueryable<Card>, IOrderedQueryable<Card>>>(),
                     It.IsAny<string>()
                     )
@@ -79,7 +82,8 @@ namespace PaymentSystem.UnitTest.Services
 
             // Assert
             Assert.Equal(2, result.Count());
-            Assert.Equal("1234567890123456", result.First().CardNumber);
+            Assert.Equal(UnitTestConstants.RightCardNumber, result.First().CardNumber);
+
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetAsync(
                     It.IsAny<Expression<Func<Card, bool>>>(),
                     It.IsAny<Func<IQueryable<Card>, IOrderedQueryable<Card>>>(),
@@ -116,15 +120,15 @@ namespace PaymentSystem.UnitTest.Services
             //Arrange
             var cardDto = new AddCardDTO
             {
-                CardNumber = "1234567890",
-                CurrencyType = "USD",
-                CVV = 111
+                CardNumber = UnitTestConstants.RightCardNumber,
+                CurrencyType = UnitTestConstants.RightCurrencyType,
+                CVV = UnitTestConstants.RightCVV
             };
             var card = new Card
             {
-                CardNumber = "1234567890",
-                CurrencyType = "USD",
-                CVV = 111
+                CardNumber = UnitTestConstants.RightCardNumber,
+                CurrencyType = UnitTestConstants.RightCurrencyType,
+                CVV = UnitTestConstants.RightCVV
             };
 
             _mockMapper.Setup(mapper => mapper.Map<Card>(cardDto))
@@ -144,10 +148,8 @@ namespace PaymentSystem.UnitTest.Services
         public async Task GetCardByCardNumberAsync_ShouldReturnCard_WhenCardExists()
         {
             // Arrange
-            var cardNumber = "1234567890";
-            var wrongCardNumber = "BadNumber";
-            var expectedCard = new Card { ID = 2L, CardNumber = cardNumber };
-            var unexpectedCard = new Card { ID = 1L, CardNumber = wrongCardNumber };
+            var expectedCard = new Card { ID = UnitTestConstants.OtherExistingCardId, CardNumber = UnitTestConstants.RightCardNumber };
+            var unexpectedCard = new Card { ID = UnitTestConstants.ExistingCardId, CardNumber = UnitTestConstants.WrongCardNumber };
             var cardList = new List<Card> { unexpectedCard, expectedCard };
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetAsync(
@@ -161,16 +163,16 @@ namespace PaymentSystem.UnitTest.Services
                   });
 
             // Act
-            var result = await _cardService.GetCardByCardNumberAsync(cardNumber);
+            var result = await _cardService.GetCardByCardNumberAsync(UnitTestConstants.RightCardNumber);
 
             // Assert
-            Assert.Equal(cardNumber, result.CardNumber);
+            Assert.Equal(UnitTestConstants.RightCardNumber, result.CardNumber);
         }
         [Fact]
-        public async Task GetCardByCardNumberAsync_ShouldReturnNull_WhenCardDoesNotExists()
+        public async Task GetCardByCardNumberAsync_ShouldThrowsException_WhenCardDoesNotExists()
         {
             //Arrange
-            var cardNumber = "1234567890";
+            var cardNumber = UnitTestConstants.WrongCardNumber;
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetAsync(
                   It.IsAny<Expression<Func<Card, bool>>>(),
@@ -178,11 +180,8 @@ namespace PaymentSystem.UnitTest.Services
                   It.IsAny<string>()))
                   .ReturnsAsync(new List<Card>());
 
-            //Act
-            var result = await _cardService.GetCardByCardNumberAsync(cardNumber);
-
             //Assert
-            Assert.Null(result);
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _cardService.GetCardByCardNumberAsync(cardNumber));
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetAsync(
                 It.IsAny<Expression<Func<Card, bool>>>(),
                   It.IsAny<Func<IQueryable<Card>, IOrderedQueryable<Card>>>(),
@@ -192,7 +191,7 @@ namespace PaymentSystem.UnitTest.Services
         public async Task UpdateCardAsync_ShouldUpdateCardSuccessfully()
         {
             // Arrange
-            var cardId = 1L;
+            var cardId = UnitTestConstants.ExistingCardId;
             var editCardDTO = new EditCardDTO { CardName = "Card 1" };
             var existingCard = new Card { ID = cardId, CardNumber = "Card 2" };
 
@@ -212,14 +211,14 @@ namespace PaymentSystem.UnitTest.Services
         public async Task UpdateCardAsync_ShouldThrowExceptionIfCardDoesNotExist()
         {
             // Arrange
-            var cardId = 1L;
+            var cardId = UnitTestConstants.ExistingCardId;
             var editCardDTO = new EditCardDTO { CardName = "Card 1" };
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync((Card?)null);
 
             // Act
-            await Assert.ThrowsAsync<InvalidDataException>(() => _cardService.UpdateCardAsync(cardId, editCardDTO));
+            await Assert.ThrowsAsync<InvalidDataException>(async () =>  await _cardService.UpdateCardAsync(cardId, editCardDTO));
 
             //Assert
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
@@ -230,7 +229,7 @@ namespace PaymentSystem.UnitTest.Services
         public async Task DeleteCardAsync_ShouldDeleteCardSuccessfully()
         {
             // Arrange
-            var cardId = 1L;
+            var cardId = UnitTestConstants.ExistingCardId;
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.DeleteAsync(cardId))
                            .Returns(Task.CompletedTask);
@@ -247,9 +246,11 @@ namespace PaymentSystem.UnitTest.Services
         public async Task IncreaseBalanceAsync_ShouldIncreaseBalanceSuccessfully()
         {
             // Arrange
-            var cardId = 1L;
-            var amount = 100M;
-            var existingCard = new Card { ID = cardId, Balance = 200M };
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.OneHundredAmount;
+            var cardAmount = UnitTestConstants.ThreeHundredAmount;
+            var expectedAmount = cardAmount + amount;
+            var existingCard = new Card { ID = cardId, Balance = UnitTestConstants.ThreeHundredAmount };
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync(existingCard);
@@ -258,7 +259,7 @@ namespace PaymentSystem.UnitTest.Services
             await _cardService.IncreaseBalanceAsync(cardId, amount);
 
             // Assert
-            Assert.Equal(300M, existingCard.Balance);
+            Assert.Equal(expectedAmount, existingCard.Balance);
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Once);
         }
 
@@ -266,14 +267,14 @@ namespace PaymentSystem.UnitTest.Services
         public async Task IncreaseBalanceAsync_ShouldThrowExceptionIfCardDoesNotExist()
         {
             // Arrange
-            var cardId = 1L;
-            var amount = 100M;
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.OneHundredAmount;
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync((Card?)null);
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidDataException>(() => _cardService.IncreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>( async () =>  await _cardService.IncreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -281,15 +282,16 @@ namespace PaymentSystem.UnitTest.Services
         public async Task IncreaseBalanceAsync_ShouldThrowExceptionIfAmountIsInvalid()
         {
             // Arrange
-            var cardId = 1L;
-            var amount = -100M;
-            var existingCard = new Card { ID = cardId, Balance = 200M };
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.InvalidAmount;
+            var cardAmount = UnitTestConstants.ThreeHundredAmount;
+            var existingCard = new Card { ID = cardId, Balance = cardAmount };
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync(existingCard);
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _cardService.IncreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await _cardService.IncreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -297,9 +299,11 @@ namespace PaymentSystem.UnitTest.Services
         public async Task DecreaseBalanceAsync_ShouldDecreaseBalanceSuccessfully()
         {
             // Arrange
-            var cardId = 1L;
-            var amount = 100M;
-            var existingCard = new Card { ID = cardId, Balance = 200M };
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.OneHundredAmount;
+            var cardAmount = UnitTestConstants.ThreeHundredAmount;
+            var expectedAmount = cardAmount - amount;
+            var existingCard = new Card { ID = cardId, Balance = cardAmount };
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync(existingCard);
@@ -308,7 +312,7 @@ namespace PaymentSystem.UnitTest.Services
             await _cardService.DecreaseBalanceAsync(cardId, amount);
 
             // Assert
-            Assert.Equal(100M, existingCard.Balance);
+            Assert.Equal(expectedAmount, existingCard.Balance);
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Once);
         }
 
@@ -316,14 +320,15 @@ namespace PaymentSystem.UnitTest.Services
         public async Task DecreaseBalanceAsync_ShouldThrowExceptionIfCardDoesNotExist()
         {
             // Arrange
-            var cardId = 1L;
-            var amount = 100M;
+            var cardId = UnitTestConstants.NotExistingCardId;
+            var amount = UnitTestConstants.OneHundredAmount;
+            Card nullCard = null; 
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
-                           .ReturnsAsync((Card?)null);
+                           .ReturnsAsync(nullCard);
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidDataException>(() => _cardService.DecreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>  await _cardService.DecreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -331,15 +336,16 @@ namespace PaymentSystem.UnitTest.Services
         public async Task DecreaseBalanceAsync_ShouldThrowExceptionIfAmountIsInvalid()
         {
             // Arrange
-            var cardId = 1L;
-            var amount = -100M;
-            var existingCard = new Card { ID = cardId, Balance = 200M };
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.InvalidAmount;
+            var cardAmount = UnitTestConstants.ThreeHundredAmount;
+            var existingCard = new Card { ID = cardId, Balance = cardAmount };
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync(existingCard);
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _cardService.DecreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await _cardService.DecreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -347,15 +353,16 @@ namespace PaymentSystem.UnitTest.Services
         public async Task DecreaseBalanceAsync_ShouldThrowExceptionIfInsufficientBalance()
         {
             // Arrange
-            var cardId = 1L;
-            var amount = 300M;
-            var existingCard = new Card { ID = cardId, Balance = 200M };
+            var cardId = UnitTestConstants.ExistingCardId;
+            var cardAmount = UnitTestConstants.OneHundredAmount;
+            var amount = UnitTestConstants.ThreeHundredAmount;
+            var existingCard = new Card { ID = cardId, Balance = cardAmount };
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync(existingCard);
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _cardService.DecreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await _cardService.DecreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -363,8 +370,8 @@ namespace PaymentSystem.UnitTest.Services
         public async Task DecreaseBalanceAsync_ShouldLogErrorOnException()
         {
             // Arrange
-            long cardId = 1L;
-            decimal invalidAmount = -10m;
+            long cardId = UnitTestConstants.ExistingCardId;
+            decimal invalidAmount = UnitTestConstants.InvalidAmount;
             var expectedErrorMessage = $"Error decreasing balance for card ID: {cardId}";
 
             // Mock setup: Return a card for the given ID
@@ -377,7 +384,6 @@ namespace PaymentSystem.UnitTest.Services
                 await _cardService.DecreaseBalanceAsync(cardId, invalidAmount);
             });
 
-            // Verify logging: Since Moq cannot verify extension methods directly, use a workaround
             _mockLogger.Verify(
                 x => x.Log(
                     It.IsAny<LogLevel>(),

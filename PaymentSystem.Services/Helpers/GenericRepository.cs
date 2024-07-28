@@ -24,7 +24,7 @@ namespace PaymentSystem.Services.Helpers
             this.dbSet = context.Set<TEntity>();
         }
         /// <inheritdoc/>
-        public virtual async Task<IEnumerable<TEntity>> GetAsync(
+        public virtual async Task<IEnumerable<TEntity>?> GetAsync(
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string includeProperties = "")
@@ -52,7 +52,7 @@ namespace PaymentSystem.Services.Helpers
             }
         }
         /// <inheritdoc/>
-        public async virtual Task<TEntity> GetByIDAsync(object id)
+        public async virtual Task<TEntity?> GetByIDAsync(object id)
         {
             return await dbSet.FindAsync(id);
         }

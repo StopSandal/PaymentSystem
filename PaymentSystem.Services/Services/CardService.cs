@@ -58,7 +58,7 @@ namespace PaymentSystem.Services.Services
             try
             {
                 _logger.LogInformation("Fetching card with card number: {CardNumber}", cardNumber);
-                var card = (await _unitOfWork.CardRepository.GetAsync(c => c.CardNumber == cardNumber)).FirstOrDefault();
+                var card = (await _unitOfWork.CardRepository.GetAsync(c => c.CardNumber == cardNumber)).First();
                 if (card == null)
                 {
                     _logger.LogWarning("Card with card number: {CardNumber} not found", cardNumber);

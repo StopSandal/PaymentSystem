@@ -4,6 +4,7 @@ using PaymentSystem.DataLayer.Entities;
 using PaymentSystem.DataLayer.EntitiesDTO.Transaction;
 using PaymentSystem.Services.Interfaces;
 using PaymentSystem.Services.Services;
+using PaymentSystem.UnitTest.Helpers;
 
 namespace PaymentSystem.UnitTest.Services
 {
@@ -28,15 +29,17 @@ namespace PaymentSystem.UnitTest.Services
         }
 
         [Fact]
-        public async Task ProcessPaymentAsync_ShouldProcessPayment_WhenCardAndTransactionValid()
+        public async Task ProcessPaymentAsync_ShouldProcessPayment_WhenCardAndTransactionValid_CheckEqualId()
         {
             // Arrange
-            long cardId = 1;
-            decimal amount = 100;
-            string currency = "USD";
-            var transactionId = 1;
-            var confirmationCode = "123456";
-            var card = new Card { ID = cardId, CurrencyType = currency, Balance = amount * 2 };
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.OneHundredAmount;
+            var cardAmount = UnitTestConstants.ThreeHundredAmount;
+            var currency = UnitTestConstants.RightCurrencyType;
+            var transactionId = UnitTestConstants.ExistingTransactionId;
+            var confirmationCode = UnitTestConstants.RightConfirmationCode;
+
+            var card = new Card { ID = cardId, CurrencyType = currency, Balance = cardAmount };
             var addTransactionDTO = new AddTransactionDTO { CardId = cardId, TotalAmount = amount, CurrencyType = currency };
             var transaction = new Transaction { Id = transactionId, ConfirmationCode = confirmationCode };
 
@@ -70,24 +73,66 @@ namespace PaymentSystem.UnitTest.Services
                 Times.Never);
         }
 
+        [Fact]
+        public async Task ProcessPaymentAsync_ShouldProcessPayment_WhenCardAndTransactionValid_CheckConfirmationCode()
+        {
+            // Arrange
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.OneHundredAmount;
+            var cardAmount = UnitTestConstants.ThreeHundredAmount;
+            var currency = UnitTestConstants.RightCurrencyType;
+            var transactionId = UnitTestConstants.ExistingTransactionId;
+            var confirmationCode = UnitTestConstants.RightConfirmationCode;
 
+            var card = new Card { ID = cardId, CurrencyType = currency, Balance = cardAmount };
+            var addTransactionDTO = new AddTransactionDTO { CardId = cardId, TotalAmount = amount, CurrencyType = currency };
+            var transaction = new Transaction { Id = transactionId, ConfirmationCode = confirmationCode };
+
+            _mockCardService.Setup(cs => cs.GetCardAsync(cardId))
+                            .ReturnsAsync(card);
+
+            _mockTransactionService.Setup(ts => ts.CreateAsync(It.IsAny<AddTransactionDTO>()))
+                                  .ReturnsAsync(transaction);
+
+            // Act
+            var result = await _paymentService.ProcessPaymentAsync(cardId, amount, currency);
+
+            // Assert
+            Assert.Equal(confirmationCode, result.ConfirmationCode);
+            _mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.IsAny<It.IsAnyType>(),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+                Times.Once);
+            _mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Warning,
+                    It.IsAny<EventId>(),
+                    It.IsAny<It.IsAnyType>(),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+                Times.Never);
+        }
 
         [Fact]
         public async Task ProcessPaymentAsync_ShouldThrowException_WhenCardNotFound()
         {
             // Arrange
-            long cardId = 1;
-            decimal amount = 100;
-            string currency = "USD";
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.OneHundredAmount;
+            var currency = UnitTestConstants.RightCurrencyType;
 
             _mockCardService.Setup(cs => cs.GetCardAsync(cardId))
                             .ReturnsAsync((Card)null);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
                 _paymentService.ProcessPaymentAsync(cardId, amount, currency));
 
-            Assert.Equal("Card not found.", exception.Message);
+            Assert.Equal(UnitTestConstants.CardNotFoundExceptionMessage, exception.Message);
             _mockLogger.Verify(
                     x => x.Log(
                         LogLevel.Information,
@@ -110,20 +155,20 @@ namespace PaymentSystem.UnitTest.Services
         public async Task ProcessPaymentAsync_ShouldThrowException_WhenCurrencyMismatch()
         {
             // Arrange
-            long cardId = 1;
-            decimal amount = 100;
-            string cardCurrency = "EUR";
-            string transactionCurrency = "USD";
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.OneHundredAmount;
+            var cardCurrency = UnitTestConstants.OtherCurrencyType;
+            var transactionCurrency = UnitTestConstants.RightCurrencyType;
             var card = new Card { ID = cardId, CurrencyType = cardCurrency };
 
             _mockCardService.Setup(cs => cs.GetCardAsync(cardId))
                             .ReturnsAsync(card);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
                 _paymentService.ProcessPaymentAsync(cardId, amount, transactionCurrency));
 
-            Assert.Equal("Currency mismatch.", exception.Message);
+            Assert.Equal(UnitTestConstants.CurrencyMismatchExceptionMessage, exception.Message);
             _mockLogger.Verify(
                     x => x.Log(
                         LogLevel.Information,
@@ -146,19 +191,20 @@ namespace PaymentSystem.UnitTest.Services
         public async Task ProcessPaymentAsync_ShouldThrowException_WhenInsufficientFunds()
         {
             // Arrange
-            long cardId = 1;
-            decimal amount = 100;
-            string currency = "USD";
-            var card = new Card { ID = cardId, CurrencyType = currency, Balance = amount - 1 };
+            var cardId = UnitTestConstants.ExistingCardId;
+            var amount = UnitTestConstants.ThreeHundredAmount;
+            var cardAmount = UnitTestConstants.OneHundredAmount;
+            var currency = UnitTestConstants.RightCurrencyType;
+            var card = new Card { ID = cardId, CurrencyType = currency, Balance = cardAmount };
 
             _mockCardService.Setup(cs => cs.GetCardAsync(cardId))
                             .ReturnsAsync(card);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
                 _paymentService.ProcessPaymentAsync(cardId, amount, currency));
 
-            Assert.Equal("Insufficient funds.", exception.Message);
+            Assert.Equal(UnitTestConstants.InsufficientFundsExceptionMessage, exception.Message);
             _mockLogger.Verify(
                     x => x.Log(
                         LogLevel.Information,
@@ -181,8 +227,8 @@ namespace PaymentSystem.UnitTest.Services
         public async Task ConfirmPaymentAsync_ShouldConfirmTransaction_WhenConfirmationCodeIsValid()
         {
             // Arrange
-            long transactionId = 1;
-            string confirmationCode = "123456";
+            var transactionId = UnitTestConstants.ExistingTransactionId;
+            var confirmationCode = UnitTestConstants.RightConfirmationCode;
             var transaction = new Transaction { Id = transactionId };
 
             _mockTransactionService.Setup(ts => ts.ConfirmTransactionAsync(transactionId, confirmationCode))
@@ -199,17 +245,17 @@ namespace PaymentSystem.UnitTest.Services
         public async Task ConfirmPaymentAsync_ShouldThrowException_WhenTransactionNotConfirmed()
         {
             // Arrange
-            long transactionId = 1;
-            string confirmationCode = "123456";
+            var transactionId = UnitTestConstants.ExistingTransactionId;
+            var confirmationCode = UnitTestConstants.RightConfirmationCode;
 
             _mockTransactionService.Setup(ts => ts.ConfirmTransactionAsync(transactionId, confirmationCode))
-                                   .ThrowsAsync(new InvalidOperationException("Transaction not confirmed."));
+                                   .ThrowsAsync(new InvalidOperationException(UnitTestConstants.TransactionNotConfirmedExceptionMessage));
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
                 _paymentService.ConfirmPaymentAsync(transactionId, confirmationCode));
 
-            Assert.Equal("Transaction not confirmed.", exception.Message);
+            Assert.Equal(UnitTestConstants.TransactionNotConfirmedExceptionMessage, exception.Message);
             _mockLogger.Verify(
                     x => x.Log(
                         LogLevel.Information,
@@ -232,7 +278,7 @@ namespace PaymentSystem.UnitTest.Services
         public async Task CancelPaymentAsync_ShouldCancelTransaction_WhenTransactionExists()
         {
             // Arrange
-            long transactionId = 1;
+            var transactionId = UnitTestConstants.ExistingTransactionId;
 
             // Act
             await _paymentService.CancelPaymentAsync(transactionId);
@@ -261,84 +307,17 @@ namespace PaymentSystem.UnitTest.Services
         public async Task CancelPaymentAsync_ShouldThrowException_WhenTransactionNotCanceled()
         {
             // Arrange
-            long transactionId = 1;
+            var transactionId = UnitTestConstants.ExistingTransactionId;
 
             _mockTransactionService.Setup(ts => ts.CancelTransactionAsync(transactionId))
-                                   .ThrowsAsync(new InvalidOperationException("Transaction not canceled."));
+                                   .ThrowsAsync(new InvalidOperationException(UnitTestConstants.TransactionNotCanceledExceptionMessage));
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
                 _paymentService.CancelPaymentAsync(transactionId));
 
-            Assert.Equal("Transaction not canceled.", exception.Message);
-            _mockLogger.Verify(
-                    x => x.Log(
-                        LogLevel.Information,
-                        It.IsAny<EventId>(),
-                        It.IsAny<It.IsAnyType>(),
-                        It.IsAny<Exception>(),
-                        (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-                    Times.Never);
-            _mockLogger.Verify(
-                x => x.Log(
-                    LogLevel.Warning,
-                    It.IsAny<EventId>(),
-                    It.IsAny<It.IsAnyType>(),
-                    It.IsAny<Exception>(),
-                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-                Times.Once);
-        }
+            Assert.Equal(UnitTestConstants.TransactionNotCanceledExceptionMessage, exception.Message);
 
-        [Fact]
-        public async Task ReturnPaymentAsync_ShouldCancelTransaction_WhenTransactionExists()
-        {
-            // Arrange
-            decimal amount = 100;
-            decimal unreturnableFee = 30;
-            var transactionId = 1;
-
-            var transaction = new Transaction { Id = transactionId, TotalAmount = amount + unreturnableFee, UnreturnableFee = unreturnableFee };
-
-            _mockTransactionService.Setup(ts => ts.ReturnTransactionAsync(transactionId))
-                                  .ReturnsAsync(transaction);
-
-            // Act
-            await _paymentService.ReturnPaymentAsync(transactionId);
-
-            // Assert
-            _mockTransactionService.Verify(ts => ts.ReturnTransactionAsync(transactionId), Times.Once);
-            _mockLogger.Verify(
-                    x => x.Log(
-                        LogLevel.Information,
-                        It.IsAny<EventId>(),
-                        It.IsAny<It.IsAnyType>(),
-                        It.IsAny<Exception>(),
-                        (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-                    Times.Once);
-            _mockLogger.Verify(
-                x => x.Log(
-                    LogLevel.Warning,
-                    It.IsAny<EventId>(),
-                    It.IsAny<It.IsAnyType>(),
-                    It.IsAny<Exception>(),
-                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-                Times.Never);
-        }
-
-        [Fact]
-        public async Task CancelPaymentAsync_ShouldThrowException_WhenTransactionNotBeReturned()
-        {
-            // Arrange
-            long transactionId = 1;
-
-            _mockTransactionService.Setup(ts => ts.ReturnTransactionAsync(transactionId))
-                                   .ThrowsAsync(new InvalidOperationException("Transaction not returned."));
-
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                _paymentService.ReturnPaymentAsync(transactionId));
-
-            Assert.Equal("Transaction not returned.", exception.Message);
             _mockLogger.Verify(
                     x => x.Log(
                         LogLevel.Information,

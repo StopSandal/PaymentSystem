@@ -18,6 +18,12 @@ namespace PaymentSystem.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieves card by id
+        /// </summary>
+        /// <param name="id">Card id</param>
+        /// <returns>Info about asked card</returns>
+        /// <response code="200">Успешное выполнение</response>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCardAsync(long id)
         {

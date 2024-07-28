@@ -15,7 +15,7 @@ namespace PaymentSystem.Services.Interfaces
         /// <param name="orderBy">A function to order the entities.</param>
         /// <param name="includeProperties">A comma-separated list of related entities to include in the query.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a collection of entities.</returns>
-        public Task<IEnumerable<TEntity>> GetAsync(
+        public Task<IEnumerable<TEntity>?> GetAsync(
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string includeProperties = "");
@@ -25,7 +25,7 @@ namespace PaymentSystem.Services.Interfaces
         /// </summary>
         /// <param name="id">The identifier of the entity.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the entity.</returns>
-        public Task<TEntity> GetByIDAsync(object id);
+        public Task<TEntity?> GetByIDAsync(object id);
 
         /// <summary>
         /// Inserts a new entity into the repository.
