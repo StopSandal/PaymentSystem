@@ -7,7 +7,7 @@ namespace PaymentSystem.UnitTest.Helpers
         internal const long NotExistingCardId = 0L;
         internal const long ExistingCardId = 1L;
         internal const long OtherExistingCardId = 2L;
-                
+
         internal const string RightCardNumber = "1234567890123456";
         internal const string OtherRightCardNumber = "6543210987654321";
         internal const string WrongCardNumber = "6543210987654321";

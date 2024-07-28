@@ -184,7 +184,7 @@ namespace PaymentSystem.UnitTest.Services
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
             // Act and Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await _transactionService.CancelTransactionAsync(transactionId));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _transactionService.CancelTransactionAsync(transactionId));
         }
 
         [Fact]
@@ -248,7 +248,7 @@ namespace PaymentSystem.UnitTest.Services
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
             // Act and Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await
                 _transactionService.ConfirmTransactionAsync(transactionId, confirmationCode));
         }
 
@@ -268,7 +268,7 @@ namespace PaymentSystem.UnitTest.Services
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
             // Act and Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await
                 _transactionService.ConfirmTransactionAsync(transactionId, confirmationCode));
         }
 
@@ -288,7 +288,7 @@ namespace PaymentSystem.UnitTest.Services
             _mockUnitOfWork.Setup(uow => uow.TransactionRepository.GetByIDAsync(transactionId)).ReturnsAsync(transaction);
 
             // Act and Assert
-            await Assert.ThrowsAsync<Exception>(async () =>  await
+            await Assert.ThrowsAsync<Exception>(async () => await
                 _transactionService.ConfirmTransactionAsync(transactionId, confirmationCode));
         }
     }

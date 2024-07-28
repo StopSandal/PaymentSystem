@@ -54,7 +54,7 @@ namespace PaymentSystem.UnitTest.Services
                            .ReturnsAsync(nullCard);
 
             // Act
-            await Assert.ThrowsAsync<ArgumentNullException>( async () => await _cardService.GetCardAsync(cardId));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _cardService.GetCardAsync(cardId));
 
             // Assert
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
@@ -218,7 +218,7 @@ namespace PaymentSystem.UnitTest.Services
                            .ReturnsAsync((Card?)null);
 
             // Act
-            await Assert.ThrowsAsync<InvalidDataException>(async () =>  await _cardService.UpdateCardAsync(cardId, editCardDTO));
+            await Assert.ThrowsAsync<InvalidDataException>(async () => await _cardService.UpdateCardAsync(cardId, editCardDTO));
 
             //Assert
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
@@ -274,7 +274,7 @@ namespace PaymentSystem.UnitTest.Services
                            .ReturnsAsync((Card?)null);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>( async () =>  await _cardService.IncreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _cardService.IncreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -291,7 +291,7 @@ namespace PaymentSystem.UnitTest.Services
                            .ReturnsAsync(existingCard);
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await _cardService.IncreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _cardService.IncreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -322,13 +322,13 @@ namespace PaymentSystem.UnitTest.Services
             // Arrange
             var cardId = UnitTestConstants.NotExistingCardId;
             var amount = UnitTestConstants.OneHundredAmount;
-            Card nullCard = null; 
+            Card nullCard = null;
 
             _mockUnitOfWork.Setup(uow => uow.CardRepository.GetByIDAsync(cardId))
                            .ReturnsAsync(nullCard);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>  await _cardService.DecreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _cardService.DecreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -345,7 +345,7 @@ namespace PaymentSystem.UnitTest.Services
                            .ReturnsAsync(existingCard);
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await _cardService.DecreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _cardService.DecreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 
@@ -362,7 +362,7 @@ namespace PaymentSystem.UnitTest.Services
                            .ReturnsAsync(existingCard);
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await _cardService.DecreaseBalanceAsync(cardId, amount));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _cardService.DecreaseBalanceAsync(cardId, amount));
             _mockUnitOfWork.Verify(uow => uow.SaveAsync(), Times.Never);
         }
 

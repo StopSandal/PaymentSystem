@@ -129,7 +129,7 @@ namespace PaymentSystem.UnitTest.Services
                             .ReturnsAsync((Card)null);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await
                 _paymentService.ProcessPaymentAsync(cardId, amount, currency));
 
             Assert.Equal(UnitTestConstants.CardNotFoundExceptionMessage, exception.Message);
@@ -165,7 +165,7 @@ namespace PaymentSystem.UnitTest.Services
                             .ReturnsAsync(card);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await
                 _paymentService.ProcessPaymentAsync(cardId, amount, transactionCurrency));
 
             Assert.Equal(UnitTestConstants.CurrencyMismatchExceptionMessage, exception.Message);
@@ -201,7 +201,7 @@ namespace PaymentSystem.UnitTest.Services
                             .ReturnsAsync(card);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await
                 _paymentService.ProcessPaymentAsync(cardId, amount, currency));
 
             Assert.Equal(UnitTestConstants.InsufficientFundsExceptionMessage, exception.Message);
@@ -252,7 +252,7 @@ namespace PaymentSystem.UnitTest.Services
                                    .ThrowsAsync(new InvalidOperationException(UnitTestConstants.TransactionNotConfirmedExceptionMessage));
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await
                 _paymentService.ConfirmPaymentAsync(transactionId, confirmationCode));
 
             Assert.Equal(UnitTestConstants.TransactionNotConfirmedExceptionMessage, exception.Message);
@@ -313,7 +313,7 @@ namespace PaymentSystem.UnitTest.Services
                                    .ThrowsAsync(new InvalidOperationException(UnitTestConstants.TransactionNotCanceledExceptionMessage));
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>  await
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await
                 _paymentService.CancelPaymentAsync(transactionId));
 
             Assert.Equal(UnitTestConstants.TransactionNotCanceledExceptionMessage, exception.Message);
