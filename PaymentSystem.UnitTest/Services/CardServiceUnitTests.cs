@@ -60,7 +60,7 @@ namespace PaymentSystem.UnitTest.Services
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetByIDAsync(cardId), Times.Once);
         }
         [Fact]
-        public async Task GetCardsAsync_ShouldAllCards()
+        public async Task GetCardsAsync_ShouldTwoCards()
         {
             // Arrange
             var expectedCards = new List<Card>
@@ -82,6 +82,35 @@ namespace PaymentSystem.UnitTest.Services
 
             // Assert
             Assert.Equal(2, result.Count());
+
+            _mockUnitOfWork.Verify(uow => uow.CardRepository.GetAsync(
+                    It.IsAny<Expression<Func<Card, bool>>>(),
+                    It.IsAny<Func<IQueryable<Card>, IOrderedQueryable<Card>>>(),
+                    It.IsAny<string>())
+                , Times.Once);
+        }
+        [Fact]
+        public async Task GetCardsAsync_ShouldAllCards_CheckOrder()
+        {
+            // Arrange
+            var expectedCards = new List<Card>
+            {
+                new Card { ID = UnitTestConstants.ExistingCardId, CardNumber = UnitTestConstants.RightCardNumber },
+                new Card { ID = UnitTestConstants.OtherExistingCardId, CardNumber = UnitTestConstants.OtherRightCardNumber }
+            };
+            _mockUnitOfWork.Setup(
+                uow => uow.CardRepository.GetAsync(
+                    It.IsAny<Expression<Func<Card, bool>>>(),
+                    It.IsAny<Func<IQueryable<Card>, IOrderedQueryable<Card>>>(),
+                    It.IsAny<string>()
+                    )
+                )
+                .ReturnsAsync(expectedCards);
+
+            // Act
+            var result = await _cardService.GetCardsAsync();
+
+            // Assert
             Assert.Equal(UnitTestConstants.RightCardNumber, result.First().CardNumber);
 
             _mockUnitOfWork.Verify(uow => uow.CardRepository.GetAsync(
